@@ -1,0 +1,281 @@
+Dim szMySelf
+Dim gseStateStarted
+Dim gseStateTrue
+Dim gseStateFalse
+Dim gseStateTerminated
+Dim gseStateConnected
+Dim gseStateNoAnswer
+Dim gseStateDisconnected
+Dim gseStatePlayed
+Dim gseStateNoPlayed
+Dim gseStateDTMFKeyPressed
+Dim gseStateSent
+Dim gseStateFollowMeNext
+Dim gseStateKey0
+Dim gseStateKey1
+Dim gseStateKey2
+Dim gseStateKey3
+Dim gseStateKey4
+Dim gseStateKey5
+Dim gseStateKey6
+Dim gseStateKey7
+Dim gseStateKey8
+Dim gseStateKey9
+Dim gseStateKey10
+Dim gseStateKey11
+Dim gseStateMonday
+Dim gseStateTuesday
+Dim gseStateWednesday
+Dim gseStateThursday
+Dim gseStateFriday
+Dim gseStateSaturday
+Dim gseStateSunday
+Dim gseStateDTMFStringCollected
+Dim gseStateSetVariableNext
+Dim gseStateEvaluateMatch
+Dim gseStateEvaluateNoMatch
+Dim gseStateTimeout
+Dim gseStateDisconnection
+Dim gseStateRecorded
+Dim gseStateFailed
+Dim gseStateIMAP4Error
+Dim gseStateIMAP4Success
+Dim gseStateIMAP4Failed
+Dim gseStateIMAP4True
+Dim gseStateIMAP4False
+Dim gseStateOnHold
+Dim gseStateActivated
+Dim gseStateProceedWDstScr
+Dim gseStateSilenceDetected
+
+szMySelf = "original destination"
+gseStateStarted = "1"
+gseStateTrue = "2"
+gseStateFalse = "3"
+gseStateTerminated = "4"
+gseStateConnected = "5"
+gseStateNoAnswer = "6"
+gseStateDisconnected = "7"
+gseStatePlayed = "8"
+gseStateNoPlayed = "9"
+gseStateDTMFKeyPressed = "10"
+gseStateSent = "11"
+gseStateFollowMeNext = "12"
+gseStateKey0 = "13"
+gseStateKey1 = "14"
+gseStateKey2 = "15"
+gseStateKey3 = "16"
+gseStateKey4 = "17"
+gseStateKey5 = "18"
+gseStateKey6 = "19"
+gseStateKey7 = "20"
+gseStateKey8 = "21"
+gseStateKey9 = "22"
+gseStateKey10 = "23"
+gseStateKey11 = "24"
+gseStateMonday = "25"
+gseStateTuesday = "26"
+gseStateWednesday = "27"
+gseStateThursday = "28"
+gseStateFriday = "29"
+gseStateSaturday = "30"
+gseStateSunday = "31"
+gseStateDTMFStringCollected = "32"
+gseStateSetVariableNext = "33"
+gseStateEvaluateMatch = "34"
+gseStateEvaluateNoMatch = "35"
+gseStateTimeout = "36"
+gseStateDisconnection = "37"
+gseStateRecorded = "38"
+gseStateFailed = "39"
+gseStateIMAP4Error = "40"
+gseStateIMAP4Success = "41"
+gseStateIMAP4Failed = "42"
+gseStateIMAP4True = "43"
+gseStateIMAP4False = "44"
+gseStateOnHold = "45"
+gseStateActivated = "46"
+gseStateProceedWDstScr = "47"
+gseStateSilenceDetected = "48"
+
+Function gsePlaySoundEx2Old(p_filename, p2, p3, p4, p5, p6, p7, p8)
+  dim objShell
+  dim f : f = chr(34) & "c:\SimulatorWavFiles\" & p_filename & chr(34)
+
+  set objShell = CreateObject("WScript.Shell")
+  objShell.Run "sndrec32 /play /close " & f, 0, True
+  set objShell = Nothing
+  gsePlaySoundEx2 = gseStatePlayed
+End Function
+
+Function gsePlaySoundEx2(p_filename, p2, p3, p4, p5, p6, p7, p8)
+  Dim x, y, result
+
+  result = gseStatePlayed
+  Set x = CreateObject("WScript.Shell")
+  Set y = x.Exec("C:\SimulatorWavFiles\GetDTMFDigit.exe " & chr(34) & "C:\SimulatorWavFiles\" & p_filename & chr(34) & " 0 PlayAnnouncement")
+
+  While y.Status = 0
+    x.Run "C:\SimulatorWavFiles\MySleep.exe 100", 0, True
+  WEnd
+
+  Select Case y.StdOut.ReadAll
+    Case "Disconnected"
+      result = gseStateDisconnected
+
+  End Select
+
+  Set y = Nothing
+  Set x = Nothing
+  gsePlaySoundEx2 = result
+End Function
+
+Function gseGetDTMFCharEx3(p_filename, repititions, interval, timeout, storeToVariable, myLocal, resetContent, flag, rcDummy, mask)
+  Dim x, y, result
+
+  result = ""
+  Set x = CreateObject("WScript.Shell")
+  Set y = x.Exec("C:\SimulatorWavFiles\GetDTMFDigit.exe " & chr(34) & "C:\SimulatorWavFiles\" & p_filename & chr(34) & " 10")
+
+  While y.Status = 0
+    x.Run "C:\SimulatorWavFiles\MySleep.exe 100", 0, True
+  WEnd
+
+  Select Case y.StdOut.ReadAll
+    Case "0"
+      result = gseStateKey0
+
+    Case "1"
+      result = gseStateKey1
+
+    Case "2"
+      result = gseStateKey2
+
+    Case "3"
+      result = gseStateKey3
+
+    Case "4"
+      result = gseStateKey4
+
+    Case "5"
+      result = gseStateKey5
+
+    Case "6"
+      result = gseStateKey6
+
+    Case "7"
+      result = gseStateKey7
+
+    Case "8"
+      result = gseStateKey8
+
+    Case "9"
+      result = gseStateKey9
+
+    Case "*"
+      result = gseStateKey10
+
+    Case "#"
+      result = gseStateKey11
+
+    Case "Timeout"
+      result = gseStateTimeout
+
+    Case "Disconnected"
+      result = gseStateDisconnected
+
+  End Select
+
+  Set y = Nothing
+  Set x = Nothing
+  gseGetDTMFCharEx3 = result
+End Function
+
+Function gseConnectToEx6(p_dest, p_timeout, p_3, p_4, myRCDummy, p_6, useAlertSound, alertSound, p_9, p_10, p_11)
+  Dim x, y, result
+
+  SetDeliveredTime
+  EndHold
+  result = ""
+  Set x = CreateObject("WScript.Shell")
+  Set y = x.Exec("C:\SimulatorWavFiles\Phone.exe " & chr(34) & p_dest & chr(34) & " " & p_timeout)
+
+  While y.Status = 0
+    x.Run "C:\SimulatorWavFiles\MySleep.exe 100", 0, True
+  WEnd
+
+  Select Case y.StdOut.ReadAll
+    Case "Connect"
+      SetConnectTime
+      result = gseStateConnected
+
+    Case "Timeout"
+      result = gseStateTimeout
+
+    Case "No Answer"
+      result = gseStateNoAnswer
+
+    Case "Not Delivered"
+      result = gseStateNotDelivered
+
+    Case "Disconnect"
+      result = gseStateDisconnected
+  End Select
+
+  Set y = Nothing
+  Set x = Nothing
+  gseConnectToEx6 = result
+End Function
+
+Function gseHoldEx(p_holdMusic)
+  Dim x, y, result, myFileName, fso, myHoldFile
+
+  myHoldFile = "c:\SimulatorWavFiles\stopHold.txt"
+  Set fso = CreateObject("Scripting.FileSystemObject")
+
+  If fso.FileExists(myHoldFile) Then fso.DeleteFile(myHoldFile)
+
+  Set fso = Nothing
+
+  myFileName = p_holdMusic
+  
+  If myFileName = "*hold*" Then myFileName = "c:\SimulatorWavFiles\SwyxWavFiles\HoldMusic\cm_Dream Traveller.wav"
+
+  result = ""
+  Set x = CreateObject("WScript.Shell")
+  Set y = x.Exec("C:\SimulatorWavFiles\Hold.exe " & chr(34) & myFileName & chr(34))
+
+  Set y = Nothing
+  Set x = Nothing
+  gseHoldEx = gseStateOnHold
+End Function
+
+Sub EndHold()
+  Dim fso, myHoldFile, f
+
+  myHoldFile = "c:\SimulatorWavFiles\stopHold.txt"
+  Set fso = CreateObject("Scripting.FileSystemObject")
+  Set f = fso.OpenTextFile(myHoldFile, 2, True)
+  f.Close
+  Set fso = Nothing
+End Sub
+
+Function CalledNumber()
+  CalledNumber = ""
+End Function
+
+Function CallId()
+  CallId = (0)
+End Function
+
+Sub SetDeliveredTime()
+  Dim mySql : mySql = "update IpPbxCDR set DeliveredTime = " & WrapInSingleQuotes(ConvertDateToISO(Now)) & " where callId = " & (-CallId())
+
+  DBExecute mySql
+End Sub
+
+Sub SetConnectTime()
+  Dim mySql : mySql = "update IpPbxCDR set ConnectTime = " & WrapInSingleQuotes(ConvertDateToISO(Now)) & " where callId = " & (-CallId())
+
+  DBExecute mySql
+End Sub

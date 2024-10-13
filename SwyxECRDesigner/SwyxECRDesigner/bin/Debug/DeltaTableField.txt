@@ -1,0 +1,3 @@
+Sub DeltaTableField(byref p_table, byref p_key, byref p_column. byref p_delta)
+	DBExecute "EXEC SP_DELTA_TABLE_FIELD " & WrapInSingleQuotes(p_table) & ", " & WrapInSingleQuotes(p_key) & ", " & WrapInSingleQuotes(p_column) & ", " & p_delta
+End Sub

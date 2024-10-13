@@ -1,0 +1,60 @@
+Function QueuePause(ByRef p_target, ByVal p_shortTimer, ByVal p_longTimer, ByRef p_rule, ByVal p_queueTimeout, ByVal p_maxQLength, ByVal p_mediumTimer, ByVal p_mediumTimerQThreshold)
+  ' Returns 0 if group not available, or available but we are not at top of the queue
+  ' Returns 1 if group available and we are at the top of the queue
+  ' Returns 2 if not in queue anymore
+  ' Returns 3 on disconnect
+
+  If debugFlag Then LogError "ServiceBuilder::QueuePause(" & WrapInQuotes(p_target) & ", " & p_shortTimer & ", " & p_longTimer & ", " & WrapInQuotes(p_rule) & ", " & p_queueTimeout & ", " & p_maxQLength & ", " & p_mediumTimer & ", " & p_mediumTimerThreshold
+
+  Dim result, shortTimeMs, mediumTimeMs, longTimeMs, qPos, myCallId, running, elapsedTimeMs
+
+  result = 0
+  shortTimeMs = p_shortTimer * 1000
+  mediumTimeMs = p_mediumTimer * 1000
+  longTimeMs = p_longTimer * 1000
+  myCallId = CallId()
+  running = True
+  elapsedTimeMs = 0
+
+  While running
+    Dim mySleepMs : mySleepMs = shortTimeMs
+
+    qPos = GetPositionInQueue(myCallId, queueTimeout, maxQueueLength)
+
+    If qPos = -1 Then
+      result = 9
+    End If
+
+    qPos = qPos + 1
+
+    If qPos = 1 Then
+      If GroupAvailable(p_target, p_rule) Then
+        result = 1
+        running = False
+      End If
+    Else
+      If qPos > p_mediumTimerQThreshold Then mySleepMs = mediumTimeMs
+    End If
+
+    If longTimeMs - elapsedTimeMs < mySleepMs Then
+      mySleepMs = longTimeMs - elapsedTimeMs
+
+      If mySleepMs <= 0 Then mySleepMs = 1
+    End If
+
+    PBXScript.Sleep mySleepMs
+
+    If PBXCall.IsOriginatorDisconnected Then
+      result = 3
+      running = False
+    Else
+      elapsedTimeMs = elapsedTimeMs + mySleepMs
+
+      If elapsedTimeMs >= longTimeMs Then running = False
+    End If
+  End While
+
+  If debugFlag Then LogError "ServiceBuilder::QueuePause() returning " & result
+
+  QueuePause = result
+End Function

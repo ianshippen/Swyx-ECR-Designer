@@ -1,0 +1,9 @@
+Function IsTodayBankHoliday()
+	Dim result
+
+	result = False
+
+	If DBReadScalar("select count(*) as value from BankHolidayTable where date = CONVERT(varchar(10), getdate(), 103)", "value") > 0 Then result = True
+	
+	IsTodayBankHoliday = result
+End Function

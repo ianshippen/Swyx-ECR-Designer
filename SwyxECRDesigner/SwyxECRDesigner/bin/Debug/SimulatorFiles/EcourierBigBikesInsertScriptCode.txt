@@ -1,0 +1,8 @@
+variablesDictionary.Add "$holdMsg", "waiting.wav"
+variablesDictionary.Add "$holdMsgs", "waiting.wav,online.wav"
+variablesDictionary.Add "$holdMusic", "*hold*"
+variablesDictionary.Add "$queueId", "193"
+variablesDictionary.Add "$target1", "_Big Bikes"
+variablesDictionary.Add "$target2", "_overflow driver"
+variablesDictionary.Add "$target3", "_All Driver"
+variablesDictionary.Add "$oohTarget", "_Out Of Hours Driver"

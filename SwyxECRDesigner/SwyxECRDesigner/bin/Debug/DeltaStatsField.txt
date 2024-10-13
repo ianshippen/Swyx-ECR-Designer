@@ -1,0 +1,37 @@
+Function DeltaStatsField(ByRef p_databaseName, ByVal p_tableName, ByRef p_queueName, ByRef p_fieldName, ByVal p_deltaAmount)
+	Dim rc, db, rs, sqlStatement, connectionString
+
+	rc = False
+	
+	On Error Resume Next
+
+	'PBXScript.OutputTrace "DeltaStatsField(" & p_queueName & ", " & p_fieldName & ", " & p_deltaAmount & ")"
+	If p_tableName = "MainInboundRule_Table" Then p_tableName = "WallboardDataTable"
+
+	sqlStatement = "EXEC SP_DAILY_UPDATE_TABLE " & WrapInSingleQuotes(p_tableName) & ", " & WrapInSingleQuotes(p_queueName) & ", " & WrapInSingleQuotes(p_fieldName) & ", " & p_deltaAmount
+	
+	Set db = CreateObject("ADODB.Connection")
+	connectionString = GenerateDatabaseConnectionString()
+	db.Open connectionString
+	
+	If Err = 0 Then
+		Set rs = db.Execute(sqlStatement)
+		
+		If Err <> 0 Then
+			LogError "Error in DeltaStatsField() : db.Execute(" & WrapInQuotes(sqlStatement) & ") failed"
+			LogError "Error code = " & CStr(Hex(Err))
+			LogError "Error description = " & Err.Description
+		End If
+		
+	        rs.Close
+	        Set rs = nothing
+		db.Close
+	Else
+		LogError "Error in DeltaStatsField() : Could not connect to database with connection string = '" & connectionString & "'"
+		LogError "Error code = " & CStr(Hex(Err))
+		LogError "Error description = " & Err.Description
+	End If
+	
+	set db = nothing
+	DeltaStatsField = rc
+End Function

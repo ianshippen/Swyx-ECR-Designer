@@ -1,0 +1,570 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?><CallFlow><Node><NodeNumber>0</NodeNumber><XPos>10</XPos><YPos>8</YPos><NodeType>SIBB_Start</NodeType><Title>Start</Title><InternalReference /><Data>Dim qLevel : qLevel = 1
+Dim levelCounter : levelCounter = 0
+variablesDictionary.Add "$qTarget", variablesDictionary.Item("$target1")
+variablesDictionary.Add "$msgCount", "-1"</Data><Outputs><Output><Name>Go</Name><NextNode>23</NextNode><Visible>True</Visible></Output></Outputs></Node><Node><NodeNumber>1</NodeNumber><XPos>170</XPos><YPos>10</YPos><NodeType>SIBB_OnDisconnect</NodeType><Title>OnDisconnect</Title><InternalReference /><Data /><Outputs><Output><Name>On Disconnect</Name><NextNode>21</NextNode><Visible>True</Visible></Output></Outputs></Node><Node><NodeNumber>2</NodeNumber><XPos>1269</XPos><YPos>557</YPos><NodeType>SIBB_Skip</NodeType><Title>Skip</Title><InternalReference /><Data /><Outputs /></Node><Node><NodeNumber>3</NodeNumber><XPos>1064</XPos><YPos>11</YPos><NodeType>SIBB_Done</NodeType><Title>Done</Title><InternalReference /><Data /><Outputs /></Node><Node><NodeNumber>4</NodeNumber><XPos>200</XPos><YPos>187</YPos><NodeType>SIBB_VBScript</NodeType><Title>Add call to queue</Title><InternalReference /><Data>AddCallToQueue 0, $queueId, ""
+
+If Not variablesDictionary.Exists("$qTimeout") Then
+  variablesDictionary.Add "$qTimeout", "1800"
+End If
+
+If Not variablesDictionary.Exists("$maxQLength") Then
+  variablesDictionary.Add "$maxQLength", "20"
+End If
+
+If Not variablesDictionary.Exists("$agentTimeout") Then
+  variablesDictionary.Add "$agentTimeout", "5"
+End If
+
+If Not variablesDictionary.Exists("$groupTimeout") Then
+  variablesDictionary.Add "$groupTimeout", "5"
+End If
+
+If Not variablesDictionary.Exists("$yellowOption") Then
+  variablesDictionary.Add "$yellowOption", "0;2"
+End If
+
+If Not variablesDictionary.Exists("$redOption") Then
+  variablesDictionary.Add "$redOption", "2;3;4;5"
+End If
+
+If Not variablesDictionary.Exists("$shortTimer") Then
+  variablesDictionary.Add "$shortTimer", "3"
+End If
+
+If Not variablesDictionary.Exists("$longTimer") Then
+  variablesDictionary.Add "$longTimer", "10"
+End If
+
+If Not variablesDictionary.Exists("$timer1") Then
+  variablesDictionary.Add "$timer1", "10"
+End If
+
+If Not variablesDictionary.Exists("$timer2") Then
+  variablesDictionary.Add "$timer2", "20"
+End If
+
+If Not variablesDictionary.Exists("$timer3") Then
+  variablesDictionary.Add "$timer3", "30"
+End If
+
+If Not variablesDictionary.Exists("$levelTimer") Then
+  variablesDictionary.Add "$levelTimer", variablesDictionary.Item("$timer1")
+End If
+
+IncRings 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>6</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>5</NodeNumber><XPos>360</XPos><YPos>176</YPos><NodeType>SIBB_PlayAnnouncement</NodeType><Title>Comfort Msg</Title><InternalReference /><Data>$holdMsg</Data><Outputs><Output><Name>Continue</Name><NextNode>6</NextNode><Visible>True</Visible></Output><Output><Name>DTMF Pressed</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>6</NodeNumber><XPos>530</XPos><YPos>188</YPos><NodeType>SIBB_VBScript</NodeType><Title>Top of queue ?</Title><InternalReference /><Data>'lastAnnouncementTime = Now()
+myUseExit = GetPositionInQueue(0, CInt($qTimeout), CInt($maxQLength))
+
+If myUseExit &gt; 1 Then myUseExit = 1
+If myUseExit = -1 Then myUseExit = 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Yes</Name><NextNode>7</NextNode><Visible>True</Visible></Output><Output><Name>No</Name><NextNode>12</NextNode><Visible>True</Visible></Output><Output><Name>Left Queue</Name><NextNode>14</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>7</NodeNumber><XPos>695</XPos><YPos>187</YPos><NodeType>SIBB_GroupAvailable</NodeType><Title>Group Available</Title><InternalReference /><Data>$qTarget,$yellowOption</Data><Outputs><Output><Name>Busy</Name><NextNode>12</NextNode><Visible>True</Visible></Output><Output><Name>Available</Name><NextNode>8</NextNode><Visible>True</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>8</NodeNumber><XPos>861</XPos><YPos>187</YPos><NodeType>SIBB_VBScript</NodeType><Title>State = Ringing</Title><InternalReference /><Data>ChangeQueueState 0, "Ringing"
+
+' Level 2 or 3 use a Parallel Connect
+If qLevel &gt;= 2 Then myUseExit = 1
+
+' So does OOH
+If variablesDictionary.Item("$target1") = "" Then myUseExit = 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Level 1</Name><NextNode>22</NextNode><Visible>True</Visible></Output><Output><Name>Level 2 or 3</Name><NextNode>22</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>9</NodeNumber><XPos>1091</XPos><YPos>93</YPos><NodeType>SIBB_LongestWaiting</NodeType><Title>Longest Waiting Agent Distributor</Title><InternalReference /><Data>$qTarget,$agentTimeout,$groupTimeout,$yellowOption,</Data><Outputs><Output><Name>Connected</Name><NextNode>10</NextNode><Visible>True</Visible></Output><Output><Name>No Answer</Name><NextNode>11</NextNode><Visible>True</Visible></Output><Output><Name>Busy</Name><NextNode>16</NextNode><Visible>True</Visible></Output><Output><Name>Not Available</Name><NextNode>16</NextNode><Visible>True</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>10</NodeNumber><XPos>1316</XPos><YPos>183</YPos><NodeType>SIBB_VBScript</NodeType><Title>Flag call</Title><InternalReference /><Data>ChangeQueueState 0, "Answered"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>19</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>11</NodeNumber><XPos>530</XPos><YPos>394</YPos><NodeType>SIBB_VBScript</NodeType><Title>State = Queueing</Title><InternalReference /><Data>ChangeQueueState 0, "Queueing"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>12</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>12</NodeNumber><XPos>739</XPos><YPos>395</YPos><NodeType>SIBB_Hold</NodeType><Title>Hold</Title><InternalReference /><Data>$holdMusic</Data><Outputs><Output><Name>Continue</Name><NextNode>13</NextNode><Visible>True</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>13</NodeNumber><XPos>904</XPos><YPos>392</YPos><NodeType>SIBB_VBScript</NodeType><Title>VB Script</Title><InternalReference /><Data>Dim i, numberOfLoops, shortTimeMS, shortTimer, longTimer, levelTimer
+
+ChangeQueueState 0, ""
+
+myUseExit = 1
+shortTimer = CInt($shortTimer)
+longTimer = CInt($longTimer)
+levelTimer = CInt($levelTimer)
+
+numberOfLoops = longTimer / shortTimer
+shortTimeMS = shortTimer * 1000
+
+For i = 0 To numberOfLoops - 1
+  PBXScript.Sleep shortTimeMS
+  
+  levelCounter = levelCounter + 1
+
+  If (levelCounter * shortTimer) &gt;= levelTimer Then
+    myUseExit = 3
+    Exit For
+  End If
+
+  Select Case GetPositionInQueue(0, CInt($qTimeout), CInt($maxQLength))
+    Case -1
+      myUseExit = 2
+      Exit For
+       
+    Case 0
+      If GroupAvailable($qTarget, $yellowOption)  Then
+        myUseExit = 0
+        Exit For
+      Else
+        myUseExit = 1
+      End If
+      
+    Case Else
+      myUseExit = 1    
+   End Select
+Next
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Top of queue</Name><NextNode>8</NextNode><Visible>True</Visible></Output><Output><Name>Loop</Name><NextNode>29</NextNode><Visible>True</Visible></Output><Output><Name>Left queue</Name><NextNode>14</NextNode><Visible>True</Visible></Output><Output><Name>Next Level</Name><NextNode>20</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>14</NodeNumber><XPos>1100</XPos><YPos>448</YPos><NodeType>SIBB_VBScript</NodeType><Title>Remove from queue</Title><InternalReference /><Data>RemoveCallFromQueue 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>2</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>15</NodeNumber><XPos>1266</XPos><YPos>445</YPos><NodeType>SIBB_EndCall</NodeType><Title>End Call</Title><InternalReference /><Data>0</Data><Outputs><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output><Output><Name>Ended</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>16</NodeNumber><XPos>1319</XPos><YPos>278</YPos><NodeType>SIBB_VBScript</NodeType><Title>State = Queueing</Title><InternalReference /><Data>ChangeQueueState 0, "Queueing"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>17</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>17</NodeNumber><XPos>1475</XPos><YPos>272</YPos><NodeType>SIBB_Hold</NodeType><Title>Hold</Title><InternalReference /><Data>*hold*</Data><Outputs><Output><Name>Continue</Name><NextNode>18</NextNode><Visible>True</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>18</NodeNumber><XPos>708</XPos><YPos>517</YPos><NodeType>SIBB_Sleep</NodeType><Title>Sleep</Title><InternalReference /><Data>1000</Data><Outputs><Output><Name>Awake</Name><NextNode>13</NextNode><Visible>True</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>19</NodeNumber><XPos>345</XPos><YPos>69</YPos><NodeType>SIBB_VBScript</NodeType><Title>Peg Answer</Title><InternalReference>Answer</InternalReference><Data>
+</Data><Outputs><Output><Name>Default</Name><NextNode>3</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>20</NodeNumber><XPos>352</XPos><YPos>473</YPos><NodeType>SIBB_VBScript</NodeType><Title>Inc Level</Title><InternalReference /><Data>qLevel = qLevel + 1
+IncRings 0
+levelCounter = 0
+
+If variablesDictionary.Item("$target1") &lt;&gt; "" Then
+If qLevel = 2 Then
+  If variablesDictionary.Item("$target2") = "" Then
+    qLevel = 3
+  Else
+    variablesDictionary.Item("$qTarget") = variablesDictionary.Item("$target2")
+    variablesDictionary.Item("$levelTimer") = variablesDictionary.Item("$timer2")
+  End If
+End If
+
+If qLevel = 3 Then
+  If variablesDictionary.Item("$target3") = "" Then
+    qLevel = 4
+  Else
+    variablesDictionary.Item("$qTarget") = variablesDictionary.Item("$target3")
+    variablesDictionary.Item("$levelTimer") = variablesDictionary.Item("$timer3")
+  End If
+End If
+
+If qLevel &gt; 3 Then myUseExit = 1
+End If
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>29</NextNode><Visible>True</Visible></Output><Output><Name>All Levels Tried</Name><NextNode>2</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>21</NodeNumber><XPos>602</XPos><YPos>18</YPos><NodeType>SIBB_VBScript</NodeType><Title>VB Script</Title><InternalReference /><Data>RemoveCallFromQueue 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>3</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>22</NodeNumber><XPos>1093</XPos><YPos>278</YPos><NodeType>SIBB_Connect</NodeType><Title>Connect</Title><InternalReference /><Data>$qTarget,15,</Data><Outputs><Output><Name>Connected</Name><NextNode>10</NextNode><Visible>True</Visible></Output><Output><Name>No Answer</Name><NextNode>11</NextNode><Visible>True</Visible></Output><Output><Name>Busy</Name><NextNode>16</NextNode><Visible>True</Visible></Output><Output><Name>Not Available</Name><NextNode>16</NextNode><Visible>True</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>23</NodeNumber><XPos>18</XPos><YPos>188</YPos><NodeType>SIBB_Holiday</NodeType><Title>Holiday Routing</Title><InternalReference /><Data /><Outputs><Output><Name>Not A Holiday</Name><NextNode>25</NextNode><Visible>True</Visible></Output><Output><Name>Bank Holiday</Name><NextNode>24</NextNode><Visible>True</Visible></Output><Output><Name>Other Holiday</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>24</NodeNumber><XPos>181</XPos><YPos>318</YPos><NodeType>SIBB_VBScript</NodeType><Title>Set qTarget to OOH</Title><InternalReference /><Data>variablesDictionary.Item("$qTarget") = variablesDictionary.Item("$oohTarget")
+variablesDictionary.Item("$target1") = ""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>4</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>25</NodeNumber><XPos>25</XPos><YPos>425</YPos><NodeType>SIBB_DayOfWeek</NodeType><Title>Day Of Week</Title><InternalReference /><Data /><Outputs><Output><Name>Monday</Name><NextNode>26</NextNode><Visible>True</Visible></Output><Output><Name>Tuesday</Name><NextNode>26</NextNode><Visible>True</Visible></Output><Output><Name>Wednesday</Name><NextNode>26</NextNode><Visible>True</Visible></Output><Output><Name>Thursday</Name><NextNode>26</NextNode><Visible>True</Visible></Output><Output><Name>Friday</Name><NextNode>26</NextNode><Visible>True</Visible></Output><Output><Name>Saturday</Name><NextNode>24</NextNode><Visible>True</Visible></Output><Output><Name>Sunday</Name><NextNode>24</NextNode><Visible>True</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>26</NodeNumber><XPos>186</XPos><YPos>458</YPos><NodeType>SIBB_TimeOfDay</NodeType><Title>Mon - Fri Times</Title><InternalReference /><Data>09:00:00,18:00:00</Data><Outputs><Output><Name>In Hours</Name><NextNode>4</NextNode><Visible>True</Visible></Output><Output><Name>Out Of Hours</Name><NextNode>24</NextNode><Visible>True</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>27</NodeNumber><XPos>368</XPos><YPos>286</YPos><NodeType>SIBB_VBScript</NodeType><Title>Cycle comfort msgs</Title><InternalReference /><Data>If variablesDictionary.Exists("$holdMsgs") Then
+  Dim x : x = CInt(variablesDictionary.Item("$msgCount"))
+  Dim y : y = Split(variablesDictionary.Item("$holdMsgs"), ",")
+
+  x = (x + 1) mod (Ubound(y) + 1)
+  variablesDictionary.Item("$holdMsg") = y(x)
+  variablesDictionary.Item("$msgCount") = CStr(x)
+End If
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>5</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>28</NodeNumber><XPos>356</XPos><YPos>636</YPos><NodeType>SIBB_GetDTMFDigit</NodeType><Title>Press 0 to exit</Title><InternalReference /><Data>True,beep.wav,0,1,True,3,False,,True,0</Data><Outputs><Output><Name>Key 0</Name><NextNode>2</NextNode><Visible>True</Visible></Output><Output><Name>Key 1</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key *</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Key #</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Timeout</Name><NextNode>27</NextNode><Visible>True</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node><Node><NodeNumber>29</NodeNumber><XPos>183</XPos><YPos>632</YPos><NodeType>SIBB_VBScript</NodeType><Title>VB Script</Title><InternalReference /><Data>If qLevel = 3 Then
+  If variablesDictionary.Exists("dtmfQuit") Then
+    If variablesDictionary.Item("dtmfQuit") = "True" Then myUseExit = 1
+  End If
+End If
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Data><Outputs><Output><Name>Default</Name><NextNode>27</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 1</Name><NextNode>28</NextNode><Visible>True</Visible></Output><Output><Name>Return Code 2</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 3</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 4</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 5</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 6</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 7</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 8</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Return Code 9</Name><NextNode>-1</NextNode><Visible>False</Visible></Output><Output><Name>Disconnected</Name><NextNode>1</NextNode><Visible>False</Visible></Output></Outputs></Node></CallFlow>

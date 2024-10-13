@@ -1,0 +1,19 @@
+' TODO: Insert you script code here
+debugFlag = True
+variablesDictionary.Add "$holdMsg", "waiting.wav"
+variablesDictionary.Add "$holdMsgs", "waiting.wav,online.wav,live.wav"
+variablesDictionary.Add "$holdMusic", "*hold*"
+variablesDictionary.Add "$queueId", "193"
+variablesDictionary.Add "$target1", "_Big Bikes"
+variablesDictionary.Add "$target2", "_overflow driver"
+variablesDictionary.Add "$target3", "_All Driver"
+variablesDictionary.Add "$oohTarget", "_Out Of Hours Driver"
+variablesDictionary.Add "$timer1", "45"
+variablesDictionary.Add "$timer2", "45"
+variablesDictionary.Add "$timer3", "1700"
+
+RunScript "Bootstrap", "Bootstrap " & WrapInQuotes("Template Script 2"), "Template Script 2"
+UseExit = 0 ' Please use the variable UseExit for the block exits 0..9
+If variablesDictionary.Exists("$returnCode") Then
+  UseExit = CInt(variablesDictionary.Item("$returnCode"))
+End If

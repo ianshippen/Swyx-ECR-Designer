@@ -1,0 +1,102 @@
+Class UserClass
+  Public UserId
+  Public Name
+  Public State
+End Class
+
+Class InfoClass
+  Private myCollection
+
+  Private Sub Class_Initialize
+    Set myCollection = CreateObject("System.Collections.ArrayList")
+  End Sub
+
+  Private Sub Class_Terminate
+    Set myCollection = Nothing
+  End Sub
+
+  Public Sub Initialize(p)
+  End Sub
+
+  Public Function GetUserByAddress(ByRef p_target)
+    Dim mySql, rs, db
+
+    myCollection.Clear
+
+    mySql = "select c.Name, c.UserId, c.Status from simulatorgrouptable as a left join simulatormembershiptable as b on a.groupId = b.groupId"
+    mySql = mySql & " left join simulatoragenttable as c on b.userId = c.userId where a.name = " & WrapInSingleQuotes(p_target)
+ 
+    Set db = Nothing
+    myResult = ""
+
+    If DBReturnResults(mySql, rs, db) Then
+      While Not rs.EOF
+        If Not IsNull(rs("Name")) Then
+          If Not IsNull(rs("UserId")) Then
+            If Not IsNull(rs("Status")) Then
+              AddUser CInt(rs("UserId")), CStr(rs("Name")), CInt(rs("Status"))
+            End If
+          End If
+        End If
+
+        rs.MoveNext
+      Wend
+    End If
+
+    Set rs = Nothing
+    Set db = Nothing
+    Set GetUserByAddress = myCollection
+  End Function
+
+  Public Sub AddUser(p_userId, p_name, p_state)
+    Dim x
+
+    Set x = New UserClass
+
+    x.userId = p_userId
+    x.Name = p_name
+    x.State = p_state
+
+    myCollection.Add x
+  End Sub
+End Class
+
+Sub PrivateLocalSleep(p_ms)
+    Dim x : Set x = CreateObject("WScript.Shell")
+  
+    x.Run "C:\SimulatorWavFiles\MySleep.exe " & p_ms, 0, True
+    Set x = Nothing
+End Sub
+
+Class PBXScriptDummyClass
+  Public Sub Sleep(p_ms)
+    PrivateLocalSleep(p_ms)
+  End Sub
+
+  Public Sub OutputTrace(p_text)
+    MsgBox(p_text)
+  End Sub
+
+  Public Function IsUserOrGroupBusy(p)
+    IsUserOrGroupBusy = False
+  End Function
+
+  Public Function CreateObject(p)
+    Set CreateObject = New InfoClass
+  End Function
+
+  Public Function GetUserByAddress()
+    Set GetUserByAddress = New InfoClass
+  End Function
+End Class
+
+Class PBXCallDummyClass
+  Public Function IsOriginatorDisconnected()
+    IsOriginatorDisconnected = False
+  End Function
+End Class
+
+Dim PBXScript : Set PBXScript = New PBXScriptDummyClass
+Dim PBXCall : Set PBXCall = New PBXCallDummyClass
+Dim PBXUser
+

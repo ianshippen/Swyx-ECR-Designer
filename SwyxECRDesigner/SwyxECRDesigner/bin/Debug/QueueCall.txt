@@ -1,0 +1,34 @@
+Function QueueCall(ByVal p_queueId, ByRef p_holdMsg)
+  Dim ourPos, looping
+
+  looping = True
+
+  ' Add call to queue
+  AddCallToQueue 0, p_queueId, ""
+
+  While looping 
+  ' Play hold msg
+  
+  ' Get our position in queue
+  ourPos = GetPositionInQueue(0)
+
+  If ourPos > 1 Then
+    ' Not top, but still in queue, put the call on hold
+    
+  Else
+    If ourPos = -1 Then
+      ' Left the queue
+      RemoveCallFromQueue 0
+      looping = False
+    Else
+      ' Top of queue, is target group free ?
+      If IsAgentFree(p_targetGroup) Then
+        ChangeQueueState 0, "Ringing"
+        IncRings 0
+      Else
+      End If
+    End If
+  End If
+
+  Wend
+End Function

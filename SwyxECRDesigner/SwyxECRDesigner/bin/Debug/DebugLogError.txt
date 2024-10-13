@@ -1,0 +1,3 @@
+Sub LogError(byref p_error)
+  MsgBox p_error
+End Sub

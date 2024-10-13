@@ -1,0 +1,28 @@
+Function AgentAvailable(ByRef p)
+    Dim result : result = False
+    Dim y, z, w
+
+    On Error Resume Next
+
+    If debugFlag Then LogError "AgentAvailable(" & WrapInQuotes(p) & ") called"
+
+    If GetUserByAddressWrapper(p, y) Then
+    	For Each z in y
+            For Each w In z.Numbers
+	     	If w = p Then
+	      	    If z.State = STATUS_AVAILABLE Then result = True
+	        End If
+	    Next
+        Next
+            
+        Set y = Nothing
+    Else
+	LogError "AgentAvailable(" & WrapInQuotes(p) & ") could not Get User By Address"
+	LogError "AgentAvailable: " & Err.Source
+	LogError "AgentAvailable: " & Err.Description
+    End If
+
+    AgentAvailable = result
+
+    If debugFlag Then LogError "AgentAvailable(" & WrapInQuotes(p) & ") returned " & result
+End Function

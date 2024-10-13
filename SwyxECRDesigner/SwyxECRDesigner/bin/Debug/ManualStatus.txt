@@ -1,0 +1,35 @@
+dim x, y, d, i
+
+set d = CreateObject("Scripting.Dictionary")
+set x = CreateObject("IpPbxSrv.PBXConfig")
+
+set y = x.getuserbyaddress(LCase("Everyone"))
+while true
+for each myUser in y
+	' Is user in the dictionary ?
+	If d.Exists(CStr(myUser.userId)) Then
+		' Has the state changed ?
+		If CInt(d.Item(CStr(myUser.userId))) <> myUser.state Then
+			' Update it
+			d.Item(CStr(myUser.userId)) = CStr(myUser.state)
+			UpdateStatus myUser.name, myUser.userId, myUser.state
+		End If
+	Else
+		' Add it
+		d.Add CStr(myUser.userId), CStr(myUser.state)
+		UpdateStatus myUser.name, myUser.userId, myUser.state
+	End If
+next
+wscript.sleep 5000
+wend
+
+set y = nothing
+set x = nothing
+set d = nothing
+
+Sub UpdateStatus(ByRef p_name, p_userId, p_state)
+	dim sql
+
+	sql = "EXEC SP_UPDATE_STATUS_TABLE 'StatusTable', " & WrapInSingleQuotes(p_name) & ", " & p_userId & ", " & p_state
+	DBExecute sql
+End Sub

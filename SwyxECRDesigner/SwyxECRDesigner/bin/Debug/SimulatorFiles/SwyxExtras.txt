@@ -1,0 +1,1129 @@
+Option Explicit
+Dim szMySelf
+Dim gseStateStarted
+Dim gseStateTrue
+Dim gseStateFalse
+Dim gseStateTerminated
+Dim gseStateConnected
+Dim gseStateNoAnswer
+Dim gseStateDisconnected
+Dim gseStatePlayed
+Dim gseStateNoPlayed
+Dim gseStateDTMFKeyPressed
+Dim gseStateSent
+Dim gseStateFollowMeNext
+Dim gseStateKey0
+Dim gseStateKey1
+Dim gseStateKey2
+Dim gseStateKey3
+Dim gseStateKey4
+Dim gseStateKey5
+Dim gseStateKey6
+Dim gseStateKey7
+Dim gseStateKey8
+Dim gseStateKey9
+Dim gseStateKey10
+Dim gseStateKey11
+Dim gseStateMonday
+Dim gseStateTuesday
+Dim gseStateWednesday
+Dim gseStateThursday
+Dim gseStateFriday
+Dim gseStateSaturday
+Dim gseStateSunday
+Dim gseStateDTMFStringCollected
+Dim gseStateSetVariableNext
+Dim gseStateEvaluateMatch
+Dim gseStateEvaluateNoMatch
+Dim gseStateTimeout
+Dim gseStateDisconnection
+Dim gseStateRecorded
+Dim gseStateFailed
+Dim gseStateIMAP4Error
+Dim gseStateIMAP4Success
+Dim gseStateIMAP4Failed
+Dim gseStateIMAP4True
+Dim gseStateIMAP4False
+Dim gseStateOnHold
+Dim gseStateActivated
+Dim gseStateProceedWDstScr
+Dim gseStateSilenceDetected
+Dim gseStateNotDelivered
+Dim gseStateOnlyStopChar
+
+szMySelf = "original destination"
+gseStateStarted = "1"
+gseStateTrue = "2"
+gseStateFalse = "3"
+gseStateTerminated = "4"
+gseStateConnected = "5"
+gseStateNoAnswer = "6"
+gseStateDisconnected = "7"
+gseStatePlayed = "8"
+gseStateNoPlayed = "9"
+gseStateDTMFKeyPressed = "10"
+gseStateSent = "11"
+gseStateFollowMeNext = "12"
+gseStateKey0 = "13"
+gseStateKey1 = "14"
+gseStateKey2 = "15"
+gseStateKey3 = "16"
+gseStateKey4 = "17"
+gseStateKey5 = "18"
+gseStateKey6 = "19"
+gseStateKey7 = "20"
+gseStateKey8 = "21"
+gseStateKey9 = "22"
+gseStateKey10 = "23"
+gseStateKey11 = "24"
+gseStateMonday = "25"
+gseStateTuesday = "26"
+gseStateWednesday = "27"
+gseStateThursday = "28"
+gseStateFriday = "29"
+gseStateSaturday = "30"
+gseStateSunday = "31"
+gseStateDTMFStringCollected = "32"
+gseStateSetVariableNext = "33"
+gseStateEvaluateMatch = "34"
+gseStateEvaluateNoMatch = "35"
+gseStateTimeout = "36"
+gseStateDisconnection = "37"
+gseStateRecorded = "38"
+gseStateFailed = "39"
+gseStateIMAP4Error = "40"
+gseStateIMAP4Success = "41"
+gseStateIMAP4Failed = "42"
+gseStateIMAP4True = "43"
+gseStateIMAP4False = "44"
+gseStateOnHold = "45"
+gseStateActivated = "46"
+gseStateProceedWDstScr = "47"
+gseStateSilenceDetected = "48"
+gseStateNotDelivered = "50"
+gseStateOnlyStopChar = "57"
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gsePlaySoundEx2Old2(p_filename, p2, p3, p4, p5, p6, p7, p8)
+  dim objShell
+  dim f : f = chr(34) & "c:\SimulatorWavFiles\" & p_filename & chr(34)
+
+  set objShell = CreateObject("WScript.Shell")
+  objShell.Run "sndrec32 /play /close " & f, 0, True
+  set objShell = Nothing
+  gsePlaySoundEx2 = gseStatePlayed
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gsePlaySoundEx2Old(p_filename, p2, p3, p4, p5, p6, p7, p8)
+  Dim x, y, result
+
+  result = gseStatePlayed
+  Set x = CreateObject("WScript.Shell")
+  Set y = x.Exec("C:\SimulatorWavFiles\GetDTMFDigit.exe " & chr(34) & "C:\SimulatorWavFiles\" & p_filename & chr(34) & " 0 PlayAnnouncement")
+
+  While y.Status = 0
+    x.Run "C:\SimulatorWavFiles\MySleep.exe 100", 0, True
+  WEnd
+
+  Select Case y.StdOut.ReadAll
+    Case "Disconnected"
+      result = gseStateDisconnected
+
+  End Select
+
+  Set y = Nothing
+  Set x = Nothing
+  gsePlaySoundEx2 = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function LocalWrapInQuotes(ByRef p)
+  LocalWrapInQuotes = Chr(34) & p & Chr(34)
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function CreateXMLHeader()
+  CreateXMLHeader = "<?xml version=" & LocalWrapInQuotes("1.0") & " encoding=" & LocalWrapInQuotes("UTF-8") & " standalone=" & LocalWrapInQuotes("yes") & "?>"
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gsePlaySoundEx2(p_filename, p2, p3, p4, p5, p6, p7, p8)
+  Dim myTxUdp, objConstants, myString, myRxUdp, result
+
+  result = gseStatePlayed
+
+  Set myRxUdp = CreateObject("AxNetwork.Udp")
+  Set myTxUdp = CreateObject("AxNetwork.Udp")
+  Set objConstants = CreateObject("AxNetwork.NwConstants")
+
+  myRxUdp.Open "localhost", 1232, True
+  myTxUdp.Open OrigIPAddress(), GetOrigPort(), False
+
+  myString = CreateXMLHeader() & "<ToPhone><Operation>PlayAnnouncement</Operation><FileName>" & "c:\SimulatorWavFiles\" & p_filename & "</FileName></ToPhone>"
+  myTxUdp.SendString myString
+  myTxUdp.Close
+
+  myString = ""
+
+  While myString = ""
+    myRxUdp.Sleep(100)
+    myString = myRxUdp.ReceiveString
+  WEnd
+
+  myRxUdp.Close
+
+  If XMLGetOperation(myString) = "Release" Then
+    result = gseStateDisconnected
+  End If
+
+  gsePlaySoundEx2 = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function XMLGetOperation(ByRef p)
+  Dim result : result = ""
+  Dim myIndex : myIndex = InStr(p, "<Operation>")
+
+  If myIndex >= 1 Then
+    Dim myEndIndex : myEndIndex = InStr(p, "</Operation>")
+
+    If myEndIndex > myIndex Then
+      myIndex = myIndex + 11
+      result = Mid(p, myIndex, myEndIndex - myIndex) 
+    End If
+  Else
+    'If p = "Connect_Timeout" Then result = p
+    result = p
+  End If
+
+  XMLGetOperation = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function XMLGetValueForParm(ByRef p, ByRef p_parm)
+  Dim result : result = ""
+  Dim myIndex : myIndex = InStr(p, "<" & p_parm & ">")
+
+  If myIndex >= 1 Then
+    Dim myEndIndex : myEndIndex = InStr(p, "</" & p_parm & ">")
+
+    If myEndIndex > myIndex Then
+      myIndex = myIndex + Len(p_parm) + 2
+      result = Mid(p, myIndex, myEndIndex - myIndex) 
+    End If
+  End If
+
+  XMLGetValueForParm = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseGetDTMFCharEx3(p_filename, repititions, interval, p_timeout, storeToVariable, myLocal, resetContent, flag, rcDummy, mask)
+  Dim myTxUdp, objConstants, myString, myRxUdp, result, myStartTime, myFileName
+
+  myFileName = ""
+
+  If p_filename <> "" Then myFileName = "c:\SimulatorWavFiles\" & p_filename
+
+  result = gseStateTimeout
+
+  Set myRxUdp = CreateObject("AxNetwork.Udp")
+  Set myTxUdp = CreateObject("AxNetwork.Udp")
+  Set objConstants = CreateObject("AxNetwork.NwConstants")
+
+  myRxUdp.Open "localhost", 1232, True
+  myTxUdp.Open OrigIPAddress(), GetOrigPort(), False
+  myString = CreateXMLHeader() & "<ToPhone><Operation>GetDTMFChar</Operation><FileName>" & myFileName & "</FileName><Timeout>" & p_timeout & "</Timeout></ToPhone>"
+  myTxUdp.SendString myString
+  myTxUdp.Close
+  myString = ""
+
+  'myStartTime = Now()
+
+  While myString = ""
+    myRxUdp.Sleep(100)
+    myString = myRxUdp.ReceiveString
+
+    If myString = "" Then
+      ' The timeout should be handled by the orig phone that is handling playing any announcement and getting the digit pressed
+      'If Now() > DateAdd("s", p_timeout, myStartTime) Then myString = "Timeout"
+    End If
+  WEnd
+
+  myRxUdp.Close
+
+  If XMLGetOperation(myString) = "Release" Then
+    result = gseStateDisconnected
+  End If
+
+  If XMLGetOperation(myString) = "GetDTMFCharCompleted" Then
+    Dim myChar : myChar = XMLGetValueForParm(myString, "Digits")
+
+    Select Case myChar
+      Case "0"
+        result = gseStateKey0
+
+      Case "1"
+        result = gseStateKey1
+
+      Case "2"
+        result = gseStateKey2
+
+      Case "3"
+        result = gseStateKey3
+
+      Case "4"
+        result = gseStateKey4
+
+      Case "5"
+        result = gseStateKey5
+
+      Case "6"
+        result = gseStateKey6
+
+      Case "7"
+        result = gseStateKey7
+
+      Case "8"
+        result = gseStateKey8
+
+      Case "9"
+        result = gseStateKey9
+
+      Case "*"
+        result = gseStateKey10
+
+      Case "#"
+        result = gseStateKey11
+
+      Case "Timeout"
+        result = gseStateTimeout
+
+      Case "Disconnected"
+        result = gseStateDisconnected
+    End Select
+  End If
+
+  gseGetDTMFCharEx3 = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseGetDTMFStringEx2(ByRef p_returnedString, resetContent, p_filename, stopOnChar, stopOnLength, p_stopChar, p_maxLength, p_timeout)
+  Dim myTxUdp, objConstants, myString, myRxUdp, result, myStartTime, myFileName
+
+  myFileName = ""
+  p_returnedString = ""
+  
+  If p_filename <> "" Then myFileName = "c:\SimulatorWavFiles\" & p_filename
+
+  result = gseStateTimeout
+
+  Set myRxUdp = CreateObject("AxNetwork.Udp")
+  Set myTxUdp = CreateObject("AxNetwork.Udp")
+  Set objConstants = CreateObject("AxNetwork.NwConstants")
+
+  myRxUdp.Open "localhost", 1232, True
+  myTxUdp.Open OrigIPAddress(), GetOrigPort(), False
+  myString = CreateXMLHeader() & "<ToPhone><Operation>GetDTMFString</Operation><FileName>" & myFileName & "</FileName><Timeout>" & p_timeout & "</Timeout><maxLength>" & p_maxLength & "</maxLength><delimiter>" & p_stopChar & "</delimiter></ToPhone>"
+  myTxUdp.SendString myString
+  myTxUdp.Close
+  myString = ""
+
+  'myStartTime = Now()
+
+  While myString = ""
+    myRxUdp.Sleep(100)
+    myString = myRxUdp.ReceiveString
+
+    If myString = "" Then
+      ' The timeout should be handled by the orig phone that is handling playing any announcement and getting the digit pressed
+      'If Now() > DateAdd("s", p_timeout, myStartTime) Then myString = "Timeout"
+    End If
+  WEnd
+
+  myRxUdp.Close
+
+  If XMLGetOperation(myString) = "Release" Then
+    result = gseStateDisconnected
+  End If
+
+  If XMLGetOperation(myString) = "GetDTMFStringCompleted" Then
+    myString = XMLGetValueForParm(myString, "Digits")
+      
+    Select Case myString  
+      Case "Timeout"
+        result = gseStateTimeout
+
+      Case "Disconnected"
+        result = gseStateDisconnected
+       
+      Case "OnlyStopChar"
+        result = gseStateOnlyStopChar
+         
+      Case Else
+        result = gseStateDTMFStringCollected
+        p_returnedString = myString
+
+    End Select
+  End If
+
+  gseGetDTMFStringEx2 = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseGetDTMFCharEx3Old(p_filename, repititions, interval, timeout, storeToVariable, myLocal, resetContent, flag, rcDummy, mask)
+  Dim x, y, result
+
+  result = ""
+  Set x = CreateObject("WScript.Shell")
+  Set y = x.Exec("C:\SimulatorWavFiles\GetDTMFDigit.exe " & chr(34) & "C:\SimulatorWavFiles\" & p_filename & chr(34) & " 10")
+
+  While y.Status = 0
+    x.Run "C:\SimulatorWavFiles\MySleep.exe 100", 0, True
+  WEnd
+
+  Select Case y.StdOut.ReadAll
+    Case "0"
+      result = gseStateKey0
+
+    Case "1"
+      result = gseStateKey1
+
+    Case "2"
+      result = gseStateKey2
+
+    Case "3"
+      result = gseStateKey3
+
+    Case "4"
+      result = gseStateKey4
+
+    Case "5"
+      result = gseStateKey5
+
+    Case "6"
+      result = gseStateKey6
+
+    Case "7"
+      result = gseStateKey7
+
+    Case "8"
+      result = gseStateKey8
+
+    Case "9"
+      result = gseStateKey9
+
+    Case "*"
+      result = gseStateKey10
+
+    Case "#"
+      result = gseStateKey11
+
+    Case "Timeout"
+      result = gseStateTimeout
+
+    Case "Disconnected"
+      result = gseStateDisconnected
+
+  End Select
+
+  Set y = Nothing
+  Set x = Nothing
+  gseGetDTMFCharEx3 = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseConnectToEx6(p_dest, p_timeout, p_3, p_4, myRCDummy, p_6, useAlertSound, alertSound, p_9, p_10, p_11)
+  Const BASE_PORT_OFFSET = 50000
+  Dim myOrigTxUdp, myDestTxUdp, objConstants, myUDPTxString, myRxUdp, result, myOrigString
+  Dim mySql, db, rs, groupId, displayedDest, myStartTime, groupType, i, myAgentStartTime
+  Dim myMembers : myMembers = Empty
+  Dim groupLastPosition : groupLastPosition = -1
+  Dim isParallel : isParallel = False
+  Dim groupCallingTimeout : groupCallingTimeout = 0
+  Dim currentAgentIndex : currentAgentIndex = 0
+  Dim actualAgentIndex : actualAgentIndex = 0
+  Dim looping : looping = True
+
+  displayedDest = p_dest
+
+  ' Check if the destination is a group
+  mySql = "select groupId, type, lastCalledPosition, callingTimeout from SimulatorGroupTable where name = " & WrapInSingleQuotes(p_dest) & " or number = " & WrapInSingleQuotes(p_dest) 
+  Set db = Nothing
+  groupId = -1
+  groupType = ""
+
+  If DBReturnResults(mySql, rs, db) Then
+    If Not rs.EOF Then
+      If Not IsNull(rs("groupId")) Then
+        groupId = CInt(rs("groupId"))
+        groupType = rs("type")
+
+        If Not IsNull(rs("lastCalledPosition")) Then groupLastPosition = CInt(rs("lastCalledPosition"))
+        If Not IsNull(rs("callingTimeout")) Then groupCallingTimeout = CInt(rs("callingTimeout"))
+      End If
+    End If
+  End If
+
+  If groupId >= 0 Then
+    ' Get all the members of this group in position order
+    mySql = "select b.name from SimulatorMembershipTable as a inner join SimulatorAgentTable as b on a.userId = b.userId where a.groupId = " & groupId & " order by position"
+
+    If DBReturnResults(mySql, rs, db) Then
+      While Not rs.EOF
+        If Not IsNull(rs("name")) Then
+          Dim myAgent : myAgent = rs("name")
+
+          If IsEmpty(myMembers) Then
+            ReDim myMembers(0)
+          Else
+            ReDim Preserve myMembers(UBound(myMembers) + 1)
+          End If
+
+	      myMembers(UBound(myMembers)) = myAgent
+        End If
+
+        rs.MoveNext
+      WEnd
+    End If
+
+    Select Case groupType
+      Case "Random"
+        Randomize
+        RandomiseMembers myMembers
+
+      Case "Rotary"
+        groupLastPosition = groupLastPosition + 1
+
+        If groupLastPosition > UBound(myMembers) Then groupLastPosition = 0
+
+	    RotateMembers myMembers, groupLastPosition
+        mySql = "update SimulatorGroupTable set lastCalledPosition = " & groupLastPosition & " where name = " & WrapInSingleQuotes(p_dest)
+        DBExecute mySql
+      
+      Case "Sequential"
+        ' Like Rotary but always starts with the first member of the group
+
+      Case Else
+        ' Handles Parallel
+        isParallel = True
+
+    End Select
+  Else
+    ' Single user as destination
+    ReDim myMembers(0)
+
+    myMembers(0) = p_dest
+  End If
+
+  SetDeliveredTime
+  EndHold
+  result = ""
+
+  ' Set the destination name in the temp CDR to the current destination - either direct extension or group name
+  SetConnectDestination "", p_dest
+
+  ' myRxUdp is used for receiving messages from either the originator, or one of the destination phones during call setup
+  Set myRxUdp = CreateObject("AxNetwork.Udp")
+  Set myOrigTxUdp = CreateObject("AxNetwork.Udp")
+  Set myDestTxUdp = CreateObject("AxNetwork.Udp")
+  Set objConstants = CreateObject("AxNetwork.NwConstants")
+
+  myRxUdp.Open "localhost", 1232, True
+  myOrigTxUdp.Open DestIpAddress("101"), GetDestPort("101"), False
+
+  ' Start ringing tone in the originator phone
+  myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>RingStart</Operation><Destination>" & displayedDest & "</Destination><CallId>" & CallId() & "</CallId></ToPhone>"
+  myOrigTxUdp.SendString myUDPTxString
+
+  Dim myMemberMaxIndex : myMemberMaxIndex = 0
+  Dim someoneAvailable : someoneAvailable = False
+  
+  If isParallel Then
+    For i = 0 To UBound(myMembers)
+      If LocalIsUserOrGroupAvailable(myMembers(i)) Then
+        UpdateAgentStatus myMembers(i), 4
+        myDestTxUdp.Open DestIPAddress(myMembers(i)), GetDestPort(myMembers(i)), False
+    
+        myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>Connect</Operation><Timeout>" & p_timeout & "</Timeout>"
+        myUDPTxString = myUDPTxString & "<Destination>" & displayedDest & "</Destination>"
+        myUDPTxString = myUDPTxString & "<CallId>" & CallId() & "</CallId>"
+        myUDPTxString = myUDPTxString & "<Target>" & p_dest & "</Target>"
+        myUDPTxString = myUDPTxString & "</ToPhone>"
+        myDestTxUdp.SendString myUDPTxString
+    
+        myDestTxUdp.Close
+        someoneAvailable = True
+      End If
+    Next
+  Else
+    actualAgentIndex = GetNextAvailableAgentIndex(myMembers, currentAgentIndex)
+    
+    If actualAgentIndex >= 0 Then
+      UpdateAgentStatus myMembers(actualAgentIndex), 4
+      myDestTxUdp.Open DestIPAddress(myMembers(actualAgentIndex)), GetDestPort(myMembers(actualAgentIndex)), False
+  
+      myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>Connect</Operation><Timeout>" & p_timeout & "</Timeout>"
+      myUDPTxString = myUDPTxString & "<Destination>" & displayedDest & "</Destination>"
+      myUDPTxString = myUDPTxString & "<CallId>" & CallId() & "</CallId>"
+      myUDPTxString = myUDPTxString & "<Target>" & p_dest & "</Target>"
+      myUDPTxString = myUDPTxString & "</ToPhone>"
+      myDestTxUdp.SendString myUDPTxString
+  
+      myDestTxUdp.Close
+      someoneAvailable = True
+    End If
+  End If
+
+  myStartTime = Now()
+  myAgentStartTime = myStartTime
+
+  ' Main Waiting Loop ......................................
+  While looping
+    Dim myLoopString : myLoopString = ""
+    
+    looping = False
+  
+    If Not someoneAvailable Then myLoopString = "Connect_NotDelivered"
+    
+    While myLoopString = ""
+      myRxUdp.Sleep(100)
+      myLoopString = myRxUdp.ReceiveString
+  
+      If myLoopString = "" Then
+        If Now() > DateAdd("s", p_timeout, myStartTime) Then
+          myLoopString = "Connect_Timeout"
+        Else
+          If (isParallel = False) And (groupCallingTimeout > 0) Then
+            If Now() > DateAdd("s", groupCallingTimeout, myAgentStartTime) Then myLoopString = "Agent_Timeout"
+          End If
+        End If
+      End If
+    WEnd
+  
+    ' Stop ringing tone in the originator phone
+    myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>RingStop</Operation><Destination>" & displayedDest & "</Destination><CallId>" & CallId() & "</CallId></ToPhone>"
+    myOrigTxUdp.SendString myUDPTxString
+  
+    Select Case XMLGetOperation(myLoopString)
+      Case "Release"
+        ' Release the connection attempts to all destinations
+        myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>Release</Operation></ToPhone>"
+  
+        For i = 0 To UBound(myMembers)
+          UpdateAgentStatus myMembers(i), 2
+          myDestTxUdp.Open DestIPAddress(myMembers(i)), GetDestPort(myMembers(i)), False
+          myDestTxUdp.SendString myUDPTxString
+          myDestTxUdp.Close
+        Next
+  
+        result = gseStateDisconnected
+  
+      Case "Connect_Connected"
+        ' Find out who has answered the call
+        Dim myName : myName = XMLGetValueForParm(myLoopString, "UserName")
+        Dim myCallingNumber: myCallingNumber = XMLGetValueForParm(myLoopString, "CallingNumber")
+        
+        SetConnectTime
+  
+        If myName <> "" Then
+          SetConnectDestination "", myName
+          UpdateAgentStatus myName, 3
+          myDestTxUdp.Open DestIPAddress(myName), GetDestPort(myName), False
+          myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>RingStopConnected</Operation></ToPhone>"
+          myDestTxUdp.SendString myUDPTxString
+          myDestTxUdp.Close
+  
+          For i = 0 To UBound(myMembers)
+            If myMembers(i) <> myName and myMembers(i) <> myCallingNumber Then
+              UpdateAgentStatus myMembers(i), 2
+              myDestTxUdp.Open DestIPAddress(myMembers(i)), GetDestPort(myMembers(i)), False
+              myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>RingStop</Operation></ToPhone>"
+              myDestTxUdp.SendString myUDPTxString
+              myDestTxUdp.Close
+            End If
+          Next
+        End If
+  
+        result = gseStateConnected
+  
+      Case "Connect_Timeout"
+        ' No Answer timeout - stop the ringing on all destination phones
+        myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>RingStop</Operation></ToPhone>"
+  
+        For i = 0 To UBound(myMembers)
+          UpdateAgentStatus myMembers(i), 2
+          myDestTxUdp.Open DestIPAddress(myMembers(i)), GetDestPort(myMembers(i)), False
+          myDestTxUdp.SendString myUDPTxString
+          myDestTxUdp.Close
+        Next
+  
+        result = gseStateTimeout
+  
+      Case "Connect_NoAnswer"
+        ' Busy
+        result = gseStateNoAnswer
+  
+      Case "Connect_NotDelivered"
+        result = gseStateNotDelivered
+  
+      Case "Agent_Timeout"
+        ' Stop ringing the current destination and start ringing the next availabe one
+        UpdateAgentStatus myMembers(actualAgentIndex), 2
+        myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>RingStop</Operation></ToPhone>"
+        myDestTxUdp.Open DestIPAddress(myMembers(actualAgentIndex)), GetDestPort(myMembers(actualAgentIndex)), False
+        myDestTxUdp.SendString myUDPTxString
+        myDestTxUdp.Close
+        
+        currentAgentIndex = currentAgentIndex + 1
+        
+        If currentAgentIndex > UBound(myMembers) Then currentAgentIndex = 0
+        
+        actualAgentIndex = GetNextAvailableAgentIndex(myMembers, currentAgentIndex)
+        
+        ' Start ringing tone in the originator phone
+        myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>RingStart</Operation><Destination>" & displayedDest & "</Destination><CallId>" & CallId() & "</CallId></ToPhone>"
+        myOrigTxUdp.SendString myUDPTxString
+        
+        If actualAgentIndex >= 0 Then
+          UpdateAgentStatus myMembers(i), 4
+          myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>Connect</Operation><Timeout>" & p_timeout & "</Timeout>"
+          myUDPTxString = myUDPTxString & "<Destination>" & displayedDest & "</Destination>"
+          myUDPTxString = myUDPTxString & "<CallId>" & CallId() & "</CallId>"
+          myUDPTxString = myUDPTxString & "<Target>" & p_dest & "</Target>"
+          myUDPTxString = myUDPTxString & "</ToPhone>"
+          myDestTxUdp.Open DestIPAddress(myMembers(actualAgentIndex)), GetDestPort(myMembers(actualAgentIndex)), False
+          myDestTxUdp.SendString myUDPTxString
+          myDestTxUdp.Close
+          myAgentStartTime = Now()
+          looping = True
+        End If
+        
+        If Not looping Then
+          ' Stop ringing tone in the originator phone
+          myUDPTxString = CreateXMLHeader() & "<ToPhone><Operation>RingStop</Operation><Destination>" & displayedDest & "</Destination><CallId>" & CallId() & "</CallId></ToPhone>"
+          myOrigTxUdp.SendString myUDPTxString
+        End If
+    End Select
+  WEnd
+
+  myRxUdp.Close
+  myOrigTxUdp.Close
+  gseConnectToEx6 = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseConnectToEx6_OldV2(p_dest, p_timeout, p_3, p_4, myRCDummy, p_6, useAlertSound, alertSound, p_9, p_10, p_11)
+  Const BASE_PORT_OFFSET = 50000
+  Dim myOrigTxUdp, myDestTxUdp, objConstants, myString, myRxUdp, result
+  Dim mySql, db, rs, groupId, displayedDest, myStartTime
+
+  displayedDest = p_dest
+
+  ' Check if the destination is a group
+  mySql = "select groupId from SimulatorGroupTable where name = " & WrapInSingleQuotes(p_dest)  
+  Set db = Nothing
+  groupId = -1
+
+  If DBReturnResults(mySql, rs, db) Then
+    If Not rs.EOF Then
+      If Not IsNull(rs("groupId")) Then groupId = CInt(rs("groupId"))
+    End If
+  End If
+
+  If groupId >= 0 Then
+    ' For now just use the first member of the group
+    mySql = "select b.name from SimulatorMembershipTable as a inner join SimulatorAgentTable as b on a.userId = b.userId where a.groupId = " & groupId
+
+    If DBReturnResults(mySql, rs, db) Then
+      If Not rs.EOF Then
+        If Not IsNull(rs("name")) Then p_dest= rs("name")
+      End If
+    End If
+  End If
+
+  SetDeliveredTime
+  EndHold
+  result = ""
+
+  Set myRxUdp = CreateObject("AxNetwork.Udp")
+  'Set myOrigTxUdp = CreateObject("AxNetwork.Udp")
+  Set myDestTxUdp = CreateObject("AxNetwork.Udp")
+  Set objConstants = CreateObject("AxNetwork.NwConstants")
+
+  myRxUdp.Open "localhost", 1232, True
+  'myOrigTxUdp.Open "127.0.0.1", GetOrigPort(), False
+  myDestTxUdp.Open DestIPAddress(p_dest), GetDestPort(p_dest), False
+
+  myString = CreateXMLHeader() & "<ToPhone><Operation>Connect</Operation><Timeout>" & p_timeout & "</Timeout><Destination>" & displayedDest & "</Destination><CallId>" & CallId() & "</CallId></ToPhone>"
+  myDestTxUdp.SendString myString
+  myString = ""
+  myStartTime = Now()
+
+  While myString = ""
+    myRxUdp.Sleep(100)
+    myString = myRxUdp.ReceiveString
+
+    If myString = "" Then
+      If Now() > DateAdd("s", p_timeout, myStartTime) Then
+        myString = "Connect_Timeout"
+      End If
+    End If
+  WEnd
+
+  myRxUdp.Close
+
+  Select Case XMLGetOperation(myString)
+    Case "Release"
+      myString = CreateXMLHeader() & "<ToPhone><Operation>Release</Operation></ToPhone>"
+      myDestTxUdp.SendString myString
+      result = gseStateDisconnected
+
+    Case "Connect_Connected"
+      SetConnectTime
+      SetConnectDestination "", p_dest
+      myString = CreateXMLHeader() & "<ToPhone><Operation>RingStop</Operation></ToPhone>"
+      myDestTxUdp.SendString myString
+      result = gseStateConnected
+
+    Case "Connect_Timeout"
+      myString = CreateXMLHeader() & "<ToPhone><Operation>RingStop</Operation></ToPhone>"
+      myDestTxUdp.SendString myString
+      result = gseStateTimeout
+
+    Case "Connect_NoAnswer"
+      result = gseStateNoAnswer
+
+    Case "Connect_NotDelivered"
+      result = gseStateNotDelivered
+  End Select
+
+  myDestTxUdp.Close
+  gseConnectToEx6 = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseConnectToEx6Old(p_dest, p_timeout, p_3, p_4, myRCDummy, p_6, useAlertSound, alertSound, p_9, p_10, p_11)
+  Dim x, y, result
+
+  SetDeliveredTime
+  EndHold
+  result = ""
+  Set x = CreateObject("WScript.Shell")
+  Set y = x.Exec("C:\SimulatorWavFiles\Phone.exe " & chr(34) & p_dest & chr(34) & " " & p_timeout)
+
+  While y.Status = 0
+    x.Run "C:\SimulatorWavFiles\MySleep.exe 100", 0, True
+  WEnd
+
+  Select Case y.StdOut.ReadAll
+    Case "Connect"
+      SetConnectTime
+      result = gseStateConnected
+
+    Case "Timeout"
+      result = gseStateTimeout
+
+    Case "No Answer"
+      result = gseStateNoAnswer
+
+    Case "Not Delivered"
+      result = gseStateNotDelivered
+
+    Case "Disconnect"
+      result = gseStateDisconnected
+  End Select
+
+  Set y = Nothing
+  Set x = Nothing
+  gseConnectToEx6Old = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseHoldExOld(p_holdMusic)
+  Dim x, y, result, myFileName, fso, myHoldFile
+
+  myHoldFile = "c:\SimulatorWavFiles\stopHold.txt"
+  Set fso = CreateObject("Scripting.FileSystemObject")
+
+  If fso.FileExists(myHoldFile) Then fso.DeleteFile(myHoldFile)
+
+  Set fso = Nothing
+
+  myFileName = p_holdMusic
+  
+  If myFileName = "*hold*" Then myFileName = "c:\SimulatorWavFiles\SwyxWavFiles\HoldMusic\cm_Dream Traveller.wav"
+
+  result = ""
+  Set x = CreateObject("WScript.Shell")
+  Set y = x.Exec("C:\SimulatorWavFiles\Hold.exe " & chr(34) & myFileName & chr(34))
+
+  Set y = Nothing
+  Set x = Nothing
+  gseHoldEx = gseStateOnHold
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Sub EndHoldOld()
+  Dim fso, myHoldFile, f
+
+  myHoldFile = "c:\SimulatorWavFiles\stopHold.txt"
+  Set fso = CreateObject("Scripting.FileSystemObject")
+  Set f = fso.OpenTextFile(myHoldFile, 2, True)
+  f.Close
+  Set fso = Nothing
+End Sub
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseHoldEx(p_holdMusic)
+  Dim myUdp, objConstants, myString, result, myFilename
+
+  myFileName = p_holdMusic
+  
+  If myFileName = "*hold*" Then myFileName = "c:\SimulatorWavFiles\SwyxWavFiles\HoldMusic\cm_Dream Traveller.wav"
+
+  result = gseStateOnHold
+
+  Set myUdp = CreateObject("AxNetwork.Udp")
+  Set objConstants = CreateObject("AxNetwork.NwConstants")
+
+  myUdp.Open OrigIPAddress(), GetOrigPort(), False
+
+  myString = CreateXMLHeader() & "<ToPhone><Operation>HoldStart</Operation><FileName>" & myFilename & "</FileName></ToPhone>"
+  myUdp.SendString myString
+  myUdp.Close
+  gseHoldEx = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Sub EndHold()
+  Dim myUdp, objConstants, myString
+
+  Set myUdp = CreateObject("AxNetwork.Udp")
+  Set objConstants = CreateObject("AxNetwork.NwConstants")
+
+  myUdp.Open OrigIPAddress(), GetOrigPort(), False
+
+  myString = CreateXMLHeader() & "<ToPhone><Operation>HoldEnd</Operation></ToPhone>"
+  myUdp.SendString myString
+  myUdp.Close
+End Sub
+
+'----------------------------------------------------------------------------------------------------------------------
+Function RealCallingNumber()
+  RealCallingNumber = ""
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function CalledNumber()
+  CalledNumber = ""
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function CallId()
+  CallId = (0)
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function CurDateTime()
+   Dim myString : myString = ""
+   
+   myString = Now()
+   CurDateTime = myString
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Sub SetDeliveredTime()
+  SetTempCDRField "DeliveredTime", ConvertDateToISO(Now)
+End Sub
+
+'----------------------------------------------------------------------------------------------------------------------
+Sub SetConnectTime()
+  SetTempCDRField "ConnectTime", ConvertDateToISO(Now)
+End Sub
+
+'----------------------------------------------------------------------------------------------------------------------
+Sub SetConnectDestination(ByRef p_destinationNumber, ByRef p_destinationName)
+  SetTempCDRField "DestinationNumber", p_destinationNumber
+  SetTempCDRField "DestinationName", p_destinationName
+End Sub
+
+'----------------------------------------------------------------------------------------------------------------------
+Sub SetTempCDRField(ByRef p_fieldName, ByRef p_value)
+  Dim mySql : mySql = "update IpPbxCDR set " & p_fieldName & " = " & WrapInSingleQuotes(p_value) & " where callId = " & (-CallId())
+
+  DBExecute mySql
+End Sub
+
+'----------------------------------------------------------------------------------------------------------------------
+Function GetOrigPort()
+  GetOrigPort = ""
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function GetDestPort(ByRef p_extension)
+  'GetDestPort = 50000 + (2 * CInt(p_extension))
+  Dim rs, db, myResult, mySql
+
+  mySql = "SELECT port FROM SimulatorAgentTable WHERE extension = " & WrapInSingleQuotes(SingleQuoteCheck(p_extension)) & " or name = " & WrapInSingleQuotes(SingleQuoteCheck(p_extension))
+  Set db = Nothing
+  myResult = CLng(0)
+
+  If DBReturnResults(mySql, rs, db) Then
+    If Not rs.EOF Then
+      If Not IsNull(rs("port")) Then myResult = CLng(rs("port"))
+    End If
+  End If
+
+  Set rs = Nothing
+  Set db = Nothing
+  GetDestPort = myResult
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function OrigIPAddress()
+  OrigIPAddress = ""
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function DestIPAddress(ByRef p_extension)
+  Dim rs, db, myResult, mySql
+
+  mySql = "SELECT ipAddress FROM SimulatorAgentTable WHERE extension = " & WrapInSingleQuotes(SingleQuoteCheck(p_extension)) & " or name = " & WrapInSingleQuotes(SingleQuoteCheck(p_extension))
+  Set db = Nothing
+  myResult = ""
+
+  If DBReturnResults(mySql, rs, db) Then
+    If Not rs.EOF Then
+      If Not IsNull(rs("ipAddress")) Then myResult = CStr(rs("ipAddress"))
+    End If
+  End If
+
+  Set rs = Nothing
+  Set db = Nothing
+  DestIPAddress = myResult
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseDayOfWeekEx()
+  Dim x : x = Weekday(Now)
+  Dim y : y = CStr(23 + x)
+
+  If y = "24" Then y = "31"
+ 
+  gseDayOfWeekEx = y
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Sub RandomiseMembers(p())
+  Dim myTempMembers : myTempMembers = Empty
+
+  ReDim myTempMembers(UBound(p))
+
+  For i = 0 To UBound(p)
+    myTempMembers(i) = p(i)
+  Next
+
+  For i = 0 To UBound(p)
+    Dim myIndex : myIndex = RndInt(UBound(p) - i)
+
+    p(i) = myTempMembers(myIndex)
+
+    For j = myIndex To UBound(myTempMembers) - 1
+      myTempMembers(j) = myTempMembers(j + 1)
+    Next
+  Next
+End Sub
+
+'----------------------------------------------------------------------------------------------------------------------
+Function RndInt(p)
+  ' Returns a random integer between 0 and p
+  RndInt = Int(Rnd() * (p + 1))
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Sub RotateMembers(ByRef p(), p_startFrom)
+  Dim myTempMembers : myTempMembers = Empty
+  Dim myIndex : myIndex = p_startFrom
+  Dim i
+  
+  ReDim myTempMembers(UBound(p))
+
+  For i = 0 To UBound(p)
+    myTempMembers(i) = p(i)
+  Next
+
+  For i = 0 To UBound(p)
+    p(i) = myTempMembers(myIndex)
+    myIndex = myIndex + 1
+
+    If myIndex > UBound(myTempMembers) Then myIndex = 0
+  Next
+End Sub
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseVoicemailEx7(p_playWelcomeAnnouncement, p_welcomeAnnouncement, p_useDTMFasCallerId, p_callerIdAnnouncement, p_useAnnouncement, p_announcement, p_maxDuration, p_emailAddress, p_parm_8, p_saveFilenameInVariable, p_result, p_parm_11, p_parm_12, p_parm_13, p_parm_14, p_parm_15, p_parm_16, p_parm_17, p_parm_18, p_parm_19, p_parm_20, p_parm_21, p_parm_22, p_parm_23)
+  Dim p2, p3, p4, p5, p6, p7, p8
+  Dim myResult : myResult = gseStateRecorded
+
+  If gsePlaySoundEx2(p_welcomeAnnouncement, p2, p3, p4, p5, p6, p7, p8) = gseStateDisconnected Then myResult = gseStateDisconnected
+  
+  gseVoicemailEx7 = myResult
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function LocalIsUserOrGroupAvailable(ByRef p_dest)
+  ' Check if user is actually in the agent table
+  Dim mySql, rs, db, myStatus, result
+  
+  result = False
+  myStatus = -1
+  Set db = Nothing
+  mySql = "select * from SimulatorAgentTable where name = " & WrapInSingleQuotes(p_dest) & " or extension = " & WrapInSingleQuotes(p_dest)
+  
+  If DBReturnResults(mySql, rs, db) Then
+    If Not rs.EOF Then
+      If Not IsNull(rs("state")) Then
+        myStatus = CInt(rs("state"))
+        
+        ' Available if Idle or DND
+        If myStatus = 2 Or myStatus = 7 Then result = True
+      End If
+    End If
+  End If
+  
+  Set db = Nothing
+  LocalIsUserOrGroupAvailable = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function GetNextAvailableAgentIndex(ByRef p_myMembers(), p_startIndex)
+    Dim result : result = -1
+    Dim agentsChecked : agentsChecked = 0
+    Dim i, myIndex : myIndex = p_startIndex
+
+    For i = 0 To UBound(p_myMembers)
+        If LocalIsUserOrGroupAvailable(p_myMembers(myIndex)) Then
+            result = myIndex
+            Exit For
+        Else
+            myIndex = myIndex + 1
+            
+            If myIndex > UBound(p_myMembers) Then myIndex = 0
+        End If
+    Next
+
+    GetNextAvailableAgentIndex = result
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Function gseSendEMailEx3(ByVal szAddress, ByVal szSubject, ByVal szBody, ByVal AttachmentType, ByVal szFrom, ByVal szReplyTo, ByVal szCC, ByVal szBCC, ByVal szFileNameToSend, ByVal bSignalNewVoicemail, ByVal szUserName)
+    MsgBox("Email to : " & szAddress & vbcrlf & "Subject: " & szSubject & vbcrlf & "User Name: " & szUserName & vbcrlf & "Body:" & vbcrlf & szBody)
+    gseSendEMailEx3 = gseStateSent
+End Function
+
+'----------------------------------------------------------------------------------------------------------------------
+Sub UpdateAgentStatus(ByRef p_name, ByVal p_status)
+    dim mySql : mySql = "update SimulatorAgentTable set state = " & p_status & " where name = " & WrapInSingleQuotes(p_name)
+    DBExecute mySql
+End Sub

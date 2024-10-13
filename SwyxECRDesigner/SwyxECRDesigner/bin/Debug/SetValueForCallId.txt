@@ -1,0 +1,127 @@
+Sub SetValueForCallID(ByRef p_databaseName, ByRef p_tableName, ByRef p_callId, ByRef p_fieldName, ByRef p_fieldValue)
+     Dim rc, db, rs, sqlStatement, value, connectionString, foundError
+
+     rc = False
+     foundError = False
+   
+     On Error Resume Next
+
+     'PBXScript.OutputTrace "SetValueForCallID(" & p_databaseName & ", " & p_tableName & ", " & p_callId & ", " & p_fieldName & ", " & p_fieldValue & ")"
+     sqlStatement = "SELECT * FROM " & p_tableName & " WHERE callId = '" & p_callId & "'"
+
+     Set db = CreateObject("ADODB.Connection")
+     connectionString = GenerateDatabaseConnectionString()
+     db.Open connectionString
+                       
+     If Err = 0 Then
+          Set rs = db.Execute(sqlStatement)
+        
+          If Err = 0 Then
+               If rs.EOF then
+                    ' The requested data does not exist in the table. Add a new entry for the callId.
+                    sqlStatement = "INSERT INTO " & p_tableName & " VALUES (" & p_callId & ", " & WrapInSingleQuotes(p_fieldValue) & ")"
+                    db.Execute(sqlStatement)
+               End If
+              
+               If Err <> 0 then
+            '   msgbox(sqlStatement)
+                         LogError "Error in SetDeliveredTime() : db.Execute('" & sqlStatement & "') failed"
+                         LogError "Error code = " & CStr(Hex(Err))
+                         LogError "Error description = " & Err.Description
+                         foundError = True
+               End If
+        
+               If foundError = False Then
+                    sqlStatement = "UPDATE " & p_tableName & " SET " & p_fieldName & " = " & WrapInSingleQuotes(p_fieldValue) & " WHERE CallId = " & p_callId
+             
+                    db.Execute sqlStatement
+
+                    If Err = 0 Then
+                         rc = True
+                    Else
+                         LogError "Error in DeltaStatsField() : db.Execute('" & sqlStatement & "') failed"
+                         LogError "Error code = " & CStr(Hex(Err))
+                         LogError "Error description = " & Err.Description
+                    End If
+               End If
+          Else
+               LogError "Error in DeltaStatsField() : db.Execute('" & sqlStatement & "') failed"
+               LogError "Error code = " & CStr(Hex(Err))
+               LogError "Error description = " & Err.Description
+          End If
+        
+          rs.Close
+          Set rs = nothing
+          db.Close
+     Else
+          LogError "Error in DeltaStatsField() : Could not connect to database with connection string = '" & connectionString & "'"
+          LogError "Error code = " & CStr(Hex(Err))
+          LogError "Error description = " & Err.Description
+     End If
+   
+     set db = nothing
+End Sub
+
+Sub OldSetValueForCallID(ByRef p_databaseName, ByRef p_tableName, ByRef p_callId, ByRef p_fieldName, ByRef p_fieldValue)
+     Dim rc, db, rs, sqlStatement, value, connectionString, foundError
+
+     rc = False
+     foundError = False
+   
+     On Error Resume Next
+
+     'PBXScript.OutputTrace "SetValueForCallID(" & p_databaseName & ", " & p_tableName & ", " & p_callId & ", " & p_fieldName & ", " & p_fieldValue & ")"
+     sqlStatement = "SELECT * FROM " & p_tableName & " WHERE callId = '" & p_callId & "'"
+
+     Set db = CreateObject("ADODB.Connection")
+     connectionString = GenerateDatabaseConnectionString()
+     db.Open connectionString
+                       
+     If Err = 0 Then
+          Set rs = db.Execute(sqlStatement)
+        
+          If Err = 0 Then
+               If rs.EOF then
+                    ' The requested data does not exist in the table. Add a new entry for the callId.
+                    sqlStatement = "INSERT INTO " & p_tableName & " VALUES (" & p_callId & ", " & WrapInSingleQuotes(p_fieldValue) & ")"
+                    db.Execute(sqlStatement)
+               End If
+              
+               If Err <> 0 then
+            '   msgbox(sqlStatement)
+                         LogError "Error in SetDeliveredTime() : db.Execute('" & sqlStatement & "') failed"
+                         LogError "Error code = " & CStr(Hex(Err))
+                         LogError "Error description = " & Err.Description
+                         foundError = True
+               End If
+        
+               If foundError = False Then
+                    sqlStatement = "UPDATE " & p_tableName & " SET " & p_fieldName & " = " & WrapInSingleQuotes(p_fieldValue) & " WHERE CallId = " & p_callId
+             
+                    db.Execute sqlStatement
+
+                    If Err = 0 Then
+                         rc = True
+                    Else
+                         LogError "Error in DeltaStatsField() : db.Execute('" & sqlStatement & "') failed"
+                         LogError "Error code = " & CStr(Hex(Err))
+                         LogError "Error description = " & Err.Description
+                    End If
+               End If
+          Else
+               LogError "Error in DeltaStatsField() : db.Execute('" & sqlStatement & "') failed"
+               LogError "Error code = " & CStr(Hex(Err))
+               LogError "Error description = " & Err.Description
+          End If
+        
+          rs.Close
+          Set rs = nothing
+          db.Close
+     Else
+          LogError "Error in DeltaStatsField() : Could not connect to database with connection string = '" & connectionString & "'"
+          LogError "Error code = " & CStr(Hex(Err))
+          LogError "Error description = " & Err.Description
+     End If
+   
+     set db = nothing
+End Sub

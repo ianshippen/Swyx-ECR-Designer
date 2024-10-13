@@ -1,0 +1,39 @@
+Class SIBBClass
+  Public nodeNumber, nodeType, data, outputs
+
+  Private Sub Class_Initialize
+    nodeNumber = -1
+    nodeType = ""
+    data = ""
+    outputs = ""
+  End Sub
+End Class
+
+Class SIBBListClass
+  private myCollection
+  private myDebugFlag
+
+  Private Sub Class_Initialize
+    Set myCollection = CreateObject("System.Collections.ArrayList")
+  End Sub
+
+  Private Sub Class_Terminate
+    Set myCollection = Nothing
+  End Sub
+
+  Public Sub Add(p_nodeNumber, p_nodeType, p_data, p_outputs)
+    Dim x
+
+    If myDebugFlag Then LogError "SIBBListClass::Add(" & p_nodeNumber & ", " & WrapInQuotes(p_nodeType) & ", " & WrapInQuotes(p_data) & ", " & WrapInQuotes(p_outputs)
+    Set x = New SIBBClass
+    x.nodeNumber = p_nodeNumber
+    x.nodeType = p_nodeType
+    x.data = p_data
+    x.outputs = p_outputs
+    myCollection.Add x
+  End Sub
+
+  Public Sub Debug(p_debugFlag)
+    myDebugFlag = p_debugFlag
+  End Sub
+End Class

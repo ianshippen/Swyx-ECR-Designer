@@ -1,0 +1,15 @@
+If variablesDictionary.Exists("$returnCode") Then
+  If variablesDictionary.Item("$returnCode") = "1" Then
+    Dim myOrigTxUdp, objConstants, myString
+
+    Set myOrigTxUdp = CreateObject("AxNetwork.Udp")
+    Set objConstants = CreateObject("AxNetwork.NwConstants")
+
+    myOrigTxUdp.Open DestIpAddress("101"), GetDestPort("101"), False  
+    myString = CreateXMLHeader() & "<ToPhone><Operation>Release</Operation><CallId>" & CallId() & "</CallId></ToPhone>"
+    myOrigTxUdp.SendString myString
+    myOrigTxUdp.Close
+    set myOrigTxUDP = nothing
+    set objConstants = nothing
+  End If
+End If

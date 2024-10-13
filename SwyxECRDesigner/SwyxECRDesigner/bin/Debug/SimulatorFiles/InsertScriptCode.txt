@@ -1,0 +1,3 @@
+debugFlag = False
+
+SetVar "$inQueueMessage", ""
