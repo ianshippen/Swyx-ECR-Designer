@@ -1,0 +1,11 @@
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\bin\Release\SwyxECRDesigner.exe
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\bin\Release\SwyxECRDesigner.pdb
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\bin\Release\SwyxECRDesigner.xml
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\obj\Release\SwyxECRDesigner.AddComponentsForm.resources
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\obj\Release\SwyxECRDesigner.Form1.resources
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\obj\Release\SwyxECRDesigner.Resources.resources
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\obj\Release\SwyxECRDesigner.vbproj.GenerateResource.Cache
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\obj\Release\SwyxECRDesigner.exe
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\obj\Release\SwyxECRDesigner.xml
+C:\Documents and Settings\Ian\My Documents\Visual Studio 2008\Projects\SwyxECRDesigner\SwyxECRDesigner\obj\Release\SwyxECRDesigner.pdb
