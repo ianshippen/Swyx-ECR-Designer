@@ -1,0 +1,719 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{206B645E-946B-4E43-8D9B-3DB9C0873358}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>SwyxECRDesigner.My.MyApplication</StartupObject>
+    <RootNamespace>SwyxECRDesigner</RootNamespace>
+    <AssemblyName>SwyxECRDesigner</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>WindowsForms</MyType>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionCompare>Binary</OptionCompare>
+    <OptionStrict>Off</OptionStrict>
+    <OptionInfer>On</OptionInfer>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <PublishUrl>http://localhost/SwyxECRDesigner/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>SwyxECRDesigner.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>SwyxECRDesigner.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Windows.Forms" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Shared\ComplexClass.vb">
+      <Link>ComplexClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\AgentEntityClass.vb">
+      <Link>AgentEntityClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\BitmapClass.vb">
+      <Link>BitmapClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\ColourClass.vb">
+      <Link>ColourClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\DatabaseAccess.vb">
+      <Link>DatabaseAccess.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\DateAndTimeClass.vb">
+      <Link>DateAndTimeClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\DictionaryClass.vb">
+      <Link>DictionaryClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\InstallFunctionUtilities.vb">
+      <Link>InstallFunctionUtilities.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\JoinClass.vb">
+      <Link>JoinClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\Logutil.vb">
+      <Link>Logutil.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\MsgBoxCentredTextClass.vb">
+      <Link>MsgBoxCentredTextClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\MultisiteEntitySettingsEntryClass.vb">
+      <Link>MultisiteEntitySettingsEntryClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\MultisiteSettingsEntry.vb">
+      <Link>MultisiteSettingsEntry.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\Options.vb">
+      <Link>Options.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\PairListClass.vb">
+      <Link>PairListClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\SemiStringClass.vb">
+      <Link>SemiStringClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\SOC.vb">
+      <Link>SOC.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\SOCEntryClass.vb">
+      <Link>SOCEntryClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\SQLStatementClass.vb">
+      <Link>SQLStatementClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\TableDefinitionClass.vb">
+      <Link>TableDefinitionClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\TaggedPairListClass.vb">
+      <Link>TaggedPairListClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\TaggedStringClass.vb">
+      <Link>TaggedStringClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\Target.vb">
+      <Link>Target.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\Utilities.vb">
+      <Link>Utilities.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\WebColourClass.vb">
+      <Link>WebColourClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\WebColours.vb">
+      <Link>WebColours.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\WindowsPathClass.vb">
+      <Link>WindowsPathClass.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\XMLUtils.vb">
+      <Link>XMLUtils.vb</Link>
+    </Compile>
+    <Compile Include="..\..\Wallboard Viewer\Wallboard Viewer\XMLWriterClass.vb">
+      <Link>XMLWriterClass.vb</Link>
+    </Compile>
+    <Compile Include="AboutForm.Designer.vb">
+      <DependentUpon>AboutForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="AboutForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AbsoluteLocationClass.vb" />
+    <Compile Include="ActivateCallSIBBClass.vb" />
+    <Compile Include="AddCallToQSIBBClass.vb" />
+    <Compile Include="AddComponentsForm.Designer.vb">
+      <DependentUpon>AddComponentsForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="AddComponentsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BackupForm.Designer.vb">
+      <DependentUpon>BackupForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="BackupForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CDRClass.vb" />
+    <Compile Include="CDRSearchForm.Designer.vb">
+      <DependentUpon>CDRSearchForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="CDRSearchForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChangeQueueStateSIBBClass.vb" />
+    <Compile Include="CharAndAttributeClass.vb" />
+    <Compile Include="Colours.vb" />
+    <Compile Include="Common.vb" />
+    <Compile Include="ConnectForm.Designer.vb">
+      <DependentUpon>ConnectForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ConnectForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ContextMenu.vb" />
+    <Compile Include="CopyFunctionFromDatabaseForm.Designer.vb">
+      <DependentUpon>CopyFunctionFromDatabaseForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="CopyFunctionFromDatabaseForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DatabaseSettingsForm.Designer.vb">
+      <DependentUpon>DatabaseSettingsForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseSettingsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DBDeltaForm.Designer.vb">
+      <DependentUpon>DBDeltaForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DBDeltaForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DDIKeyEntryClass.vb" />
+    <Compile Include="DDIVariableTypeClass.vb" />
+    <Compile Include="DebugForm.Designer.vb">
+      <DependentUpon>DebugForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DebugForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Delete.vb" />
+    <Compile Include="DeltaForm.Designer.vb">
+      <DependentUpon>DeltaForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DeltaForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DeltaLocationClass.vb" />
+    <Compile Include="Devbase.vb" />
+    <Compile Include="DigForm.Designer.vb">
+      <DependentUpon>DigForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DigForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DoesDatabaseTableExist.vb" />
+    <Compile Include="DrawConnections.vb" />
+    <Compile Include="DrawFrameClass.vb" />
+    <Compile Include="EditVarForm.Designer.vb">
+      <DependentUpon>EditVarForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="EditVarForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExportFunctionForm.Designer.vb">
+      <DependentUpon>ExportFunctionForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ExportFunctionForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FirstTimeSIBBClass.vb" />
+    <Compile Include="FunctionDefClass.vb" />
+    <Compile Include="GetCurrentTimeSIBBClass.vb" />
+    <Compile Include="GetDTMFDigitClass.vb" />
+    <Compile Include="GetDTMFDigitForm.Designer.vb">
+      <DependentUpon>GetDTMFDigitForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="GetDTMFDigitForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GetDTMFStringForm.Designer.vb">
+      <DependentUpon>GetDTMFStringForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="GetDTMFStringForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GetLengthOfQueueSIBBClass.vb" />
+    <Compile Include="GetPositionInQueueSIBBClass.vb" />
+    <Compile Include="Globals.vb" />
+    <Compile Include="GroupAvailableForm.Designer.vb">
+      <DependentUpon>GroupAvailableForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="GroupAvailableForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUIBuilderClass.vb" />
+    <Compile Include="HasTimeElapsedSIBBClass.vb" />
+    <Compile Include="HolidayClass.vb" />
+    <Compile Include="HolidayForm.Designer.vb">
+      <DependentUpon>HolidayForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="HolidayForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InfoForm.Designer.vb">
+      <DependentUpon>InfoForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="InfoForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JavascriptBuilderForm.Designer.vb">
+      <DependentUpon>JavascriptBuilderForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="JavascriptBuilderForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Keyboard.vb" />
+    <Compile Include="LineSegmentClass.vb" />
+    <Compile Include="LocalGlobals.vb" />
+    <Compile Include="LocationBaseClass.vb" />
+    <Compile Include="LogAgentStatusSIBBClass.vb" />
+    <Compile Include="LogPointSIBBClass.vb" />
+    <Compile Include="LongestWaitingForm.Designer.vb">
+      <DependentUpon>LongestWaitingForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="LongestWaitingForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MouseDown.vb" />
+    <Compile Include="MouseMove.vb" />
+    <Compile Include="MouseUp.vb" />
+    <Compile Include="MyBaseForm.Designer.vb">
+      <DependentUpon>MyBaseForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="MyBaseForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ComponentClass.vb" />
+    <Compile Include="ConnectSIBBClass.vb" />
+    <Compile Include="DayOfWeekClass.vb" />
+    <Compile Include="DesignerForm.Designer.vb">
+      <DependentUpon>DesignerForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DesignerForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DoneClass.vb" />
+    <Compile Include="EndCallClass.vb" />
+    <Compile Include="ExportForm.Designer.vb">
+      <DependentUpon>ExportForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ExportForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.vb">
+      <DependentUpon>Form1.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GetDTMFStringClass.vb" />
+    <Compile Include="GroupAvailableSIBBClass.vb" />
+    <Compile Include="HoldSIBBClass.vb" />
+    <Compile Include="LineClass.vb" />
+    <Compile Include="LineListClass.vb" />
+    <Compile Include="LongestWaitingSIBBClass.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="NameName.Designer.vb">
+      <DependentUpon>NameName.vb</DependentUpon>
+    </Compile>
+    <Compile Include="NameName.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NameValuePairClass.vb" />
+    <Compile Include="OnDisconnectClass.vb" />
+    <Compile Include="OpeningTimeClass.vb" />
+    <Compile Include="OpeningTimesClass.vb" />
+    <Compile Include="PASIBBClass.vb" />
+    <Compile Include="Paste.vb" />
+    <Compile Include="PauseSIBBClass.vb" />
+    <Compile Include="PhoneForm.Designer.vb">
+      <DependentUpon>PhoneForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="PhoneForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QueryForm.Designer.vb">
+      <DependentUpon>QueryForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="QueryForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QueuePauseSIBBClass.vb" />
+    <Compile Include="RefreshDataClass.vb" />
+    <Compile Include="RemoveCallFromQueueSIBBClass.vb" />
+    <Compile Include="RestoreForm.Designer.vb">
+      <DependentUpon>RestoreForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="RestoreForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RestoreScriptsForm.Designer.vb">
+      <DependentUpon>RestoreScriptsForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="RestoreScriptsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RTFClass.vb" />
+    <Compile Include="ScreenLocationClass.vb" />
+    <Compile Include="ScriptForm.Designer.vb">
+      <DependentUpon>ScriptForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScriptListClass.vb" />
+    <Compile Include="ScriptListEntryClass.vb" />
+    <Compile Include="ScriptNameToFileNameForm.Designer.vb">
+      <DependentUpon>ScriptNameToFileNameForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptNameToFileNameForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectScriptForm.Designer.vb">
+      <DependentUpon>SelectScriptForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SelectScriptForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SendEmailSIBBClass.vb" />
+    <Compile Include="ServiceWideVariableClass.vb" />
+    <Compile Include="SettingsForm.Designer.vb">
+      <DependentUpon>SettingsForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SharedGUI.vb" />
+    <Compile Include="ShowVariablesCodeForm.Designer.vb">
+      <DependentUpon>ShowVariablesCodeForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ShowVariablesCodeForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SIBBClass.vb" />
+    <Compile Include="SIBBOutputClass.vb" />
+    <Compile Include="SimulatorForm.Designer.vb">
+      <DependentUpon>SimulatorForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SimulatorForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SkipClass.vb" />
+    <Compile Include="SleepSIBBClass.vb" />
+    <Compile Include="SIBBTypeClass.vb" />
+    <Compile Include="StartClass.vb" />
+    <Compile Include="TestForm.Designer.vb">
+      <DependentUpon>TestForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="TestForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TimeOfDayClass.vb" />
+    <Compile Include="TODDOWSIBBClass.vb" />
+    <Compile Include="TODDOWSIBBForm.Designer.vb">
+      <DependentUpon>TODDOWSIBBForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="TODDOWSIBBForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TopOfQueueSIBBClass.vb" />
+    <Compile Include="UsedByClass.vb" />
+    <Compile Include="ValueExpressionClass.vb" />
+    <Compile Include="VariablesForm.Designer.vb">
+      <DependentUpon>VariablesForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="VariablesForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VBEditorForm.Designer.vb">
+      <DependentUpon>VBEditorForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="VBEditorForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VBScriptClass.vb" />
+    <Compile Include="ViewCodeForm.Designer.vb">
+      <DependentUpon>ViewCodeForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ViewCodeForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VoicemailForm.Designer.vb">
+      <DependentUpon>VoicemailForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="VoicemailForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VoicemailSIBBClass.vb" />
+    <Compile Include="WalkthroughForm.Designer.vb">
+      <DependentUpon>WalkthroughForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="WalkthroughForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AboutForm.resx">
+      <DependentUpon>AboutForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddComponentsForm.resx">
+      <DependentUpon>AddComponentsForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BackupForm.resx">
+      <DependentUpon>BackupForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CDRSearchForm.resx">
+      <DependentUpon>CDRSearchForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConnectForm.resx">
+      <DependentUpon>ConnectForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CopyFunctionFromDatabaseForm.resx">
+      <DependentUpon>CopyFunctionFromDatabaseForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DatabaseSettingsForm.resx">
+      <DependentUpon>DatabaseSettingsForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DBDeltaForm.resx">
+      <DependentUpon>DBDeltaForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DebugForm.resx">
+      <DependentUpon>DebugForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeltaForm.resx">
+      <DependentUpon>DeltaForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DigForm.resx">
+      <DependentUpon>DigForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditVarForm.resx">
+      <DependentUpon>EditVarForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportFunctionForm.resx">
+      <DependentUpon>ExportFunctionForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GetDTMFDigitForm.resx">
+      <DependentUpon>GetDTMFDigitForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GetDTMFStringForm.resx">
+      <DependentUpon>GetDTMFStringForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GroupAvailableForm.resx">
+      <DependentUpon>GroupAvailableForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HolidayForm.resx">
+      <DependentUpon>HolidayForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InfoForm.resx">
+      <DependentUpon>InfoForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JavascriptBuilderForm.resx">
+      <DependentUpon>JavascriptBuilderForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LongestWaitingForm.resx">
+      <DependentUpon>LongestWaitingForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MyBaseForm.resx">
+      <DependentUpon>MyBaseForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DesignerForm.resx">
+      <DependentUpon>DesignerForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportForm.resx">
+      <DependentUpon>ExportForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NameName.resx">
+      <DependentUpon>NameName.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PhoneForm.resx">
+      <DependentUpon>PhoneForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="QueryForm.resx">
+      <DependentUpon>QueryForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RestoreForm.resx">
+      <DependentUpon>RestoreForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RestoreScriptsForm.resx">
+      <DependentUpon>RestoreScriptsForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScriptForm.resx">
+      <DependentUpon>ScriptForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScriptNameToFileNameForm.resx">
+      <DependentUpon>ScriptNameToFileNameForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SelectScriptForm.resx">
+      <DependentUpon>SelectScriptForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingsForm.resx">
+      <DependentUpon>SettingsForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowVariablesCodeForm.resx">
+      <DependentUpon>ShowVariablesCodeForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SimulatorForm.resx">
+      <DependentUpon>SimulatorForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestForm.resx">
+      <DependentUpon>TestForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TODDOWSIBBForm.resx">
+      <DependentUpon>TODDOWSIBBForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VariablesForm.resx">
+      <DependentUpon>VariablesForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VBEditorForm.resx">
+      <DependentUpon>VBEditorForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewCodeForm.resx">
+      <DependentUpon>ViewCodeForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VoicemailForm.resx">
+      <DependentUpon>VoicemailForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WalkthroughForm.resx">
+      <DependentUpon>WalkthroughForm.vb</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="MSScriptControl">
+      <Guid>{0E59F1D2-1FBE-11D0-8FF2-00A0D10038BC}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OldSimulator.txt" />
+    <Content Include="sibbs.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

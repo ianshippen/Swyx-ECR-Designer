@@ -1,0 +1,232 @@
+﻿Module SIBBs
+    Private Const gseStatePlayed As Integer = 0
+    Private Const gseStateDTMFKeyPressed As Integer = 1
+    Private Const gseStateDisconnected As Integer = 2
+    Private Const gseStateSunday As Integer = 0
+    Private Const gseStateMonday As Integer = 1
+    Private Const gseStateTuesday As Integer = 2
+    Private Const gseStateWednesday As Integer = 3
+    Private Const gseStateThursday As Integer = 4
+    Private Const gseStateFriday As Integer = 5
+    Private Const gseStateSaturday As Integer = 6
+
+    Function SIBB_Start(ByRef p_data)
+        If debugFlag Then LogError("ServiceBuilder::SIBB_Start() called")
+
+        SIBB_Start = 0
+
+        If debugFlag Then LogError("ServiceBuilder::SIBB_Start() exiting with 0")
+    End Function
+
+    Function SIBB_PlayAnnouncement(ByVal p_filename)
+        If debugFlag Then LogError("ServiceBuilder::SIBB_PlayAnnouncement(" & WrapInQuotes(p_filename) & ") called")
+
+        Dim useExit, myRCDummy
+
+        useExit = -1
+
+        If p_filename = "" Then
+            'LogError "ServiceBuilder::PlayAnnouncement() no announcement specified"
+            useExit = 0
+        Else
+            useExit = gsePlaySoundEx2(p_filename, "", False, myRCDummy, True, False, "", False)
+
+            Select Case useExit
+                Case gseStatePlayed
+                    useExit = 0
+
+                Case gseStateDTMFKeyPressed
+                    useExit = 1
+
+                Case gseStateDisconnected
+                    useExit = 2
+
+            End Select
+        End If
+
+        If debugFlag Then LogError("ServiceBuilder::SIBB_PlayAnnouncement() returning " & useExit)
+
+        SIBB_PlayAnnouncement = useExit
+    End Function
+
+    Private Function gsePlaySoundEx2(ByRef p_filename As String, ByRef p2 As String, ByVal p3 As Boolean, ByRef p4 As Integer, ByVal p5 As Boolean, ByVal p6 As Boolean, ByRef p7 As String, ByVal p8 As Boolean)
+        My.Computer.Audio.Play("C:\Documents and Settings\Ian\Desktop\Recordings\test.wav", AudioPlayMode.WaitToComplete)
+
+        Return 0
+    End Function
+
+    Function SIBB_Done(ByRef p_data)
+        variablesDictionary.Item("$returnCode") = 0
+        SIBB_Done = -1
+    End Function
+
+    Function SIBB_TimeOfDay(ByRef p_data)
+        If debugFlag Then LogError("ServiceBuilder::SIBB_TimeOfDay(" & WrapInQuotes(p_data) & ")")
+
+        Dim seconds, myArray, myUseExit
+
+        myUseExit = -1
+        seconds = DateAndTime.Timer
+        myArray = Split(p_data, ",")
+
+        If variablesDictionary.Exists("$testDateTime") Then
+            Dim z : z = variablesDictionary.Item("$testDateTime")
+
+            If Len(z) > 0 Then seconds = (3600 * DatePart("h", CDate(z))) + (60 * DatePart("n", CDate(z))) + DatePart("s", CDate(z))
+        End If
+
+        If UBound(myArray) = 1 Then
+            Dim startSecond, endSecond
+            Dim doCheck : doCheck = True
+
+            myUseExit = 1
+
+            If myArray(0) = "" Then
+                If myArray(1) = "" Then
+                    doCheck = False
+                Else
+                    startSecond = 0
+                    endSecond = (3600 * CInt(Left(myArray(1), 2))) + (60 * CInt(Mid(myArray(1), 4, 2))) + CInt(Mid(myArray(1), 7))
+                End If
+            Else
+                startSecond = (3600 * CInt(Left(myArray(0), 2))) + (60 * CInt(Mid(myArray(0), 4, 2))) + CInt(Mid(myArray(0), 7))
+
+                If myArray(1) = "" Then
+                    endSecond = 86399
+                Else
+                    endSecond = (3600 * CInt(Left(myArray(1), 2))) + (60 * CInt(Mid(myArray(1), 4, 2))) + CInt(Mid(myArray(1), 7))
+                End If
+            End If
+
+            If doCheck Then
+                If seconds >= startSecond And seconds <= endSecond Then myUseExit = 0
+            End If
+        Else
+            LogError("ServiceBuilder::SIBB_TimeOfDay(" & WrapInQuotes(p_data) & " - invalid data")
+        End If
+
+        If debugFlag Then LogError("ServiceBuilder::SIBB_TimeOfDay() returning " & myUseExit)
+
+        SIBB_TimeOfDay = myUseExit
+    End Function
+
+    Function SIBB_DayOfWeek(ByRef p_data)
+        If debugFlag Then LogError("ServiceBuilder::SIBB_DayOfWeek()")
+
+        Dim myUseExit : myUseExit = gseDayOfWeekEx()
+
+        Select Case myUseExit
+            Case gseStateMonday
+                myUseExit = 0
+
+            Case gseStateTuesday
+                myUseExit = 1
+
+            Case gseStateWednesday
+                myUseExit = 2
+
+            Case gseStateThursday
+                myUseExit = 3
+
+            Case gseStateFriday
+                myUseExit = 4
+
+            Case gseStateSaturday
+                myUseExit = 5
+
+            Case gseStateSunday
+                myUseExit = 6
+
+            Case gseStateDisconnected
+                myUseExit = 7
+
+            Case Else
+                myUseExit = -1
+        End Select
+
+        If variablesDictionary.Exists("$testDateTime") Then
+            Dim z : z = variablesDictionary.Item("$testDateTime")
+
+            If Len(z) > 0 Then
+                myUseExit = (DatePart("w", CDate(z)) - 2)
+
+                If myUseExit = -1 Then myUseExit = 6
+            End If
+        End If
+
+        If debugFlag Then LogError("ServiceBuilder::SIBB_DayOfWeek() returned " & myUseExit)
+
+        SIBB_DayOfWeek = myUseExit
+    End Function
+
+    Private Function gseDayOfWeekEx() As Integer
+        ' 0 to 6 : Sunday to Saturday
+        Return Now.DayOfWeek
+    End Function
+
+    Function SIBB_LogPoint(ByRef p_data)
+        Dim myUseExit, myArray
+
+        If debugFlag Then LogError("ServiceBuilder::SIBB_LogPoint(" & WrapInQuotes(p_data) & ")")
+
+        myUseExit = -1
+        myArray = Split(p_data, ",")
+
+        If UBound(myArray) = 1 Then
+            Dim myLogPoint : myLogPoint = CInt(myArray(0))
+            Dim firstTimeOnly : firstTimeOnly = myArray(1)
+            Dim mySql
+
+            myUseExit = 0
+
+            mySql = "EXEC SP_UPDATE_SB_LOG_POINT_TABLE " & CallId() & ", " & WrapInSingleQuotes(CreateTimestamp()) & ", " & myLogPoint & ", " & WrapInSingleQuotes(firstTimeOnly)
+
+            DBExecute(mySql)
+        End If
+
+        If debugFlag Then LogError("ServiceBuilder::SIBB_LogPoint returns " & myUseExit)
+
+        SIBB_LogPoint = myUseExit
+    End Function
+
+    Function CreateTimeStamp()
+        Dim ms : ms = DateAndTime.Timer
+        Dim myNow : myNow = Now
+        Dim result : result = ConvertDateToISO(myNow)
+        Dim msString : msString = CStr(ms)
+
+        If InStr(msString, ".") > 0 Then
+            msString = Mid(msString, InStr(msString, ".") + 1)
+        Else
+            msString = "000"
+        End If
+
+        While Len(msString) < 3
+            msString = msString & "0"
+        End While
+
+        result = result & "." & Left(msString, 3)
+        CreateTimeStamp = result
+    End Function
+
+    Function SIBB_VBScript(ByRef p_data)
+        If debugFlag Then LogError("ServiceBuilder::SIBB_VBScript() called")
+
+        myUseExit = 0
+
+        If p_data <> "" Then
+            'Dim myStartInfo As New System.Diagnostics.ProcessStartInfo
+            Dim myScriptControl As New MSScriptControl.ScriptControl
+
+            myScriptControl.Language = "VBScript"
+
+            'System.Diagnostics.Process.Start(myStartInfo)
+            'ExecuteGlobal(p_data)
+            myScriptControl.ExecuteStatement(p_data)
+        End If
+
+        If debugFlag Then LogError("ServiceBuilder::SIBB_VBScript() exiting with " & myUseExit)
+
+        SIBB_VBScript = myUseExit
+    End Function
+End Module
