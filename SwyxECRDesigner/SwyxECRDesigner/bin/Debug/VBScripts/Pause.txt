@@ -1,0 +1,31 @@
+Function Pause(ByRef p_target, ByVal p_shortTimer, ByVal p_longTimer, ByRef p_rule)
+  ' Returns 0 if group not available
+  ' Returns 1 if group available
+  ' Returns 9 on disconnect
+
+  If debugFlag Then LogError "ServiceBuilder::Pause(" & WrapInQuotes(p_target) & ", " & p_longTimer & ", " & p_shortTimer & ", " & WrapInQuotes(p_rule)
+
+  Dim result, numberOfLoops, shortTimeMs, i
+
+  result = 0
+  numberOfLoops = CInt(p_longTimer / p_shortTimer)
+  shortTimeMs = p_shortTimer * 1000
+
+  For i = 1 To numberOfLoops
+    PBXScript.Sleep shortTimeMs
+
+    If PBXCall.IsOriginatorDisconnected Then
+      result = 9
+      Exit For
+    Else
+      If GroupAvailable(p_target, p_rule) Then
+        result = 1
+        Exit For
+      End If
+    End If
+  Next
+
+  If debugFlag Then LogError "ServiceBuilder::Pause() returning " & result
+
+  Pause = result
+End Function

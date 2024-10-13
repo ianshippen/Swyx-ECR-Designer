@@ -1,0 +1,48 @@
+Function SIBB_DayOfWeek(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_DayOfWeek()"
+        
+  Dim myUseExit : myUseExit = gseDayOfWeekEx()
+      
+  Select Case myUseExit
+    Case gseStateMonday
+      myUseExit = 0
+
+    Case gseStateTuesday
+      myUseExit = 1
+
+    Case gseStateWednesday
+      myUseExit = 2
+
+    Case gseStateThursday
+      myUseExit = 3
+
+    Case gseStateFriday
+      myUseExit = 4
+
+    Case gseStateSaturday
+      myUseExit = 5
+
+    Case gseStateSunday
+      myUseExit = 6
+
+    Case gseStateDisconnected
+      myUseExit = 7
+
+    Case Else
+      myUseExit = -1
+  End Select
+
+  If variablesDictionary.Exists("$testDateTime") Then
+    Dim z : z = variablesDictionary.Item("$testDateTime")
+
+    If Len(z) > 0 Then
+      myUseExit = (DatePart("w", CDate(z)) - 2)
+
+      If myUseExit = -1 Then myUseExit = 6
+    End If
+  End If
+  
+  If debugFlag Then LogError "ServiceBuilder::SIBB_DayOfWeek() returned " & myUseExit
+
+  SIBB_DayOfWeek = myUseExit
+End Function

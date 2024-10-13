@@ -1,0 +1,30 @@
+Function SIBB_GetQueueLength(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GetQueueLength(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray, myQueueId, myThreshold, storeInVariable, myLength
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")
+
+  If UBound(myArray) = 2 Then
+    myQueueId = CInt(myArray(0))
+    myThreshold = CInt(myArray(1))
+    storeInVariable = myArray(2)
+
+    myLength = GetQueueLength(myQueueId)
+
+    If myLength >= 0 Then
+      If storeInVariable <> "" Then SetVar storeInVariable, myLength
+
+      If myLength < myThreshold Then myUseExit = 0
+      If myLength = myThreshold Then myUseExit = 1
+      If myLength > myThreshold Then myUseExit = 2
+    End If
+  Else
+    LogError "ServiceBuilder::SIBB_GetQueueLength(" & WrapInQuotes(p_data) & ") Error: Wrong number of parameters"   
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GetQueueLength returns " & myUseExit
+
+  SIBB_GetQueueLength = myUseExit
+End Function

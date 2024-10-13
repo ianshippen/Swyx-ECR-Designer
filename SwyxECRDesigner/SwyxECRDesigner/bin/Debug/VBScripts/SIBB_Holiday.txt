@@ -1,0 +1,32 @@
+Function SIBB_Holiday(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Holiday()"
+        
+  Dim myUseExit : myUseExit = 0
+  Dim myResult : myResult = ""
+  Dim myDateTime : myDateTime = ""
+  Dim myUseCustomTimes : myUseCustomTimes = 0
+
+  If variablesDictionary.Exists("$testDateTime") Then
+    Dim z : z = variablesDictionary.Item("$testDateTime")
+
+    If Len(z) = 19 Then myDateTime = z
+  End If
+    
+  If variablesDictionary.Exists("$bankHolidayUseCustomTimes") Then
+    If variablesDictionary.Item("$bankHolidayUseCustomTimes") = "True" Then
+      myUseCustomTimes = 1
+    End If
+  End If
+
+  myResult = DBReadScalar("EXEC SP_BANK_HOLIDAY_CHECK " & WrapInSingleQuotes(myDateTime) & ", " & myUseCustomTimes, "value")
+
+  If Not IsNull(myResult) Then
+    If myResult <> "" Then myUseExit = CInt(myResult)
+
+    If myResult > 1 Then myResult = 1
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Holiday() returned " & myUseExit
+
+  SIBB_Holiday = myUseExit
+End Function

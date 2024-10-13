@@ -1,0 +1,4 @@
+Function SIBB_Done(ByRef p_data)
+  variablesDictionary.Item("$returnCode") = 0
+  SIBB_Done = -1
+End Function

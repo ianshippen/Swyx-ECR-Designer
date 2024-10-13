@@ -1,0 +1,21 @@
+' Format of p_openingTimes is HH:MM-HH:MM for each day separated by a comma from Monday
+' E.g. "09:00-17:30,09:00-17:30,09:00-17:30,09:00-17:30,09:00-17:00,10:00-13:00,00:00-00:00"
+' Returns 0 if Out Of Hours, 1 if In Hours
+Function TODDOW(ByRef p_openingTimes)
+  If debugFlag Then LogError "ServiceBuilder::TODDOW(" & WrapInQuotes(p_openingTimes) & " called"
+
+  Dim result : result = 0
+  Dim myNow : myNow = Now
+  Dim dayOfWeek : dayOfWeek = WeekDay(myNow, 2) - 1
+  Dim myIndex : myIndex = (dayOfWeek * 12) + 1
+  Dim myTimes : myTimes = Mid(p_openingTimes, myIndex, 11)
+  Dim minuteOfDay : minuteOfDay = (DatePart("h", myNow) * 60) + DatePart("n", myNow)
+  Dim openMinute : openMinute = (60 * CInt(Mid(myTimes, 1, 2))) + CInt(Mid(myTimes, 4, 2))
+  Dim closeMinute : closeMinute = (60 * CInt(Mid(myTimes, 7, 2))) + CInt(Mid(myTimes, 10, 2))
+
+  If minuteOfDay >= openMinute And minuteOfDay <= closeMinute Then result = 1
+
+  If debugFlag Then LogError "ServiceBuilder::TODDOW() returning " & result
+
+  TODDOW = result
+End Function

@@ -1,0 +1,87 @@
+Function SIBB_GetDTMFDigit(p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GetDTMFDigit(" & WrapInQuotes(p_data) & ") called"
+
+  Dim myUseExit, myArray, rcDummy
+
+  myUseExit = -1
+  myArray = Split(p_data, ",") 
+
+  If UBound(myArray) = 9 Then
+    Dim playAnnouncement : playAnnouncement = CBool(myArray(0))
+    Dim sound : sound = "" : If playAnnouncement Then sound = myArray(1)
+    Dim repititions : repititions = myArray(2)
+    Dim interval : interval = myArray(3)
+    Dim timeout : timeout = myArray(5)
+    Dim variableName : variableName = myArray(7)
+    Dim resetContent : resetContent = Not CBool(myArray(8))
+    Dim mask : mask = myArray(9)
+    Dim myLocal : myLocal = ""
+    Dim storeToVariable : storeToVariable = False : If variableName <> "" Then storeToVariable = True
+
+    myUseExit = gseGetDTMFCharEx3(sound, repititions, interval, timeout, storeToVariable, myLocal, resetContent, False, rcDummy, mask)
+
+    If variableName <> "" Then
+     If Left(variableName, 1) = Chr(34) Then variableName = Right(variableName, Len(variableName) - 1)
+     If Right(variableName, 1) = Chr(34) Then variableName = Left(variableName, Len(variableName) - 1)
+     
+     If variablesDictionary.Exists(variableName) Then
+        variablesDictionary.Item(variableName) = myLocal
+      Else
+        variablesDictionary.Add variableName, myLocal
+      End If
+    End If
+
+    Select Case myUseExit
+      Case gseStateKey0
+        myUseExit = 0
+
+      Case gseStateKey1
+        myUseExit = 1
+
+      Case gseStateKey2
+        myUseExit = 2
+
+      Case gseStateKey3
+        myUseExit = 3
+
+      Case gseStateKey4
+        myUseExit = 4
+
+      Case gseStateKey5
+        myUseExit = 5
+
+      Case gseStateKey6
+        myUseExit = 6
+
+      Case gseStateKey7
+        myUseExit = 7
+
+      Case gseStateKey8
+        myUseExit = 8
+
+      Case gseStateKey9
+        myUseExit = 9
+
+      Case gseStateKey10
+        myUseExit = 10
+
+      Case gseStateKey11
+        myUseExit = 11
+
+      Case gseStateTimeout
+        myUseExit = 12
+
+      Case gseStateDisconnected
+        myUseExit = 13
+
+      Case Else
+        myUseExit = -1
+    End Select
+  Else
+    LogError "ServiceBuilder::SIBB_GetDTMFDigit(" & WrapInQuotes(p_data) & " - invalid data - received " & UBound(myArray) & " elements"
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GetDTMFDigit() returning " & myUseExit
+
+  SIBB_GetDTMFDigit = myUseExit
+End Function

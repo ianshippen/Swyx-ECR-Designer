@@ -1,0 +1,11 @@
+Function EndCall(ByVal p_intReason)
+  Dim result : result = False
+
+  If debugFlag Then LogError "ServiceBuilder::EndCall(" & p_intReason & ")"
+
+  If gseTerminate(CStr(p_intReason)) = gseStateTerminated Then result = True
+
+  If debugFlag Then LogError "ServiceBuilder::EndCall() returning " & result
+
+  EndCall = result    
+End Function

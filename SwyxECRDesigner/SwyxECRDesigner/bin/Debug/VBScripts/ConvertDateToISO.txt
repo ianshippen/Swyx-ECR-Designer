@@ -1,0 +1,33 @@
+Function ConvertDateToISO(p_date)
+	dim a, result, temp 
+
+	result = Year(p_date) & "-"	
+	temp = Month(p_date)
+
+	If temp < 10 Then result = result & "0"
+
+	result = result & temp & "-"
+	temp = Day(p_date)
+	
+	If temp < 10 Then result = result & "0"
+
+	result = result & temp & " "
+
+	temp = Hour(p_date)
+
+	If temp < 10 Then result = result & "0"
+
+	result = result & temp & ":"
+	temp = Minute(p_date)
+
+	If temp < 10 Then result = result & "0"
+
+	result = result & temp & ":"
+	temp = Second(p_date)
+
+	If temp < 10 Then result = result & "0"
+
+	result = result & temp
+
+	ConvertDateToISO = result
+End Function

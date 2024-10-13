@@ -1,0 +1,11 @@
+Function SIBB_Hold(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Hold(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit : myUseExit = 1
+
+  If Hold(p_data) Then myUseExit = 0
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Hold returns " & myUseExit
+
+  SIBB_Hold = myUseExit
+End Function

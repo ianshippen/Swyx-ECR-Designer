@@ -1,0 +1,153 @@
+Dim myUseExit
+
+Sub RunScript(ByRef p_scriptName, ByRef p_immediateCommand, ByRef p_pullInSIBBsFor)
+  If debugFlag Then Logerror "Scripts.txt::ServiceBuilder::RunScript(" & WrapInQuotes(p_scriptName) & ", " & WrapInQuotes(p_immediateCommand) & ")"
+  Dim rs, db, myCode, mySql, myList, i, count, myUsesArrayList
+  
+  ' Pull in any static code for a Start Block
+  mySql = "SELECT data FROM ServiceBuilderTable WHERE scriptName = " & WrapInSingleQuotes(p_pullinSIBBsFor) & " AND nodeType = 'SIBB_Start'"
+  Set db = Nothing
+  myCode = ""
+
+  If DBReturnResults(mySql, rs, db) Then
+    If Not rs.EOF Then
+      If Not IsNull(rs("data")) Then myCode = CStr(rs("data"))
+    End If
+  End If
+
+  Set rs = Nothing
+  
+  If Len(myCode) > 0 Then myCode = myCode & vbCrLf
+  
+  myCode = myCode & p_immediateCommand
+  mySql = "SELECT code FROM scripts WHERE FunctionName = " & WrapInSingleQuotes(p_scriptName) & " ORDER BY lineNumber"
+  count = 0
+  Set myUsesArrayList = CreateObject("System.Collections.ArrayList")
+
+  If DBReturnResults(mySql, rs, db) Then
+    While Not rs.EOF
+      If Not IsNull(rs("Code")) Then
+        If Len(myCode) > 0 Then myCode = myCode & vbCrLf
+
+        myCode = myCode & rs("Code")
+        count = count + 1
+      End If
+      
+      rs.MoveNext
+    Wend
+
+    If debugFlag Then LogError "Scripts.txt::ServiceBuilder::RunScript() found " & count & " lines of code for " & WrapInQuotes(p_scriptName)
+
+    Set rs = Nothing
+
+    If p_pullInSIBBsFor <> "" Then
+      mySQL = "SELECT DISTINCT nodeType FROM ServiceBuilderTable WHERE scriptName = " & WrapInSingleQuotes(p_pullInSIBBsFor)
+      Set myList = CreateObject("System.Collections.ArrayList")
+
+      If DBReturnResults(mySql, rs, db) Then
+        While Not rs.EOF
+          If Not IsNull(rs("nodeType")) Then
+            Dim myNodeName : myNodeName = rs("nodeType")
+
+            myList.Add(myNodeName)
+          End If
+
+          rs.MoveNext
+        Wend
+
+        If debugFlag Then
+          LogError "Scripts.txt::ServiceBuilder::RunScript() requires " & myList.Count() & " SIBBs for " & WrapInQuotes(p_pullInSIBBsFor)
+
+          For i = 0 To myList.Count() - 1
+            LogError "Scripts.txt::ServiceBuilder::RunScript() requires SIBB: " & WrapInQuotes(myList.Item(i))
+          Next
+        End If
+
+        Set rs = Nothing
+
+        ' Pull in the dependencies for each SIBB function used
+        mySql = ""
+ 
+        ' Generate a list of the SIBBs used to match against in the Needs database table
+        For i = 0 To myList.Count() - 1
+          If mySql <> "" Then mySql = mySql & ","
+
+          mySql = mySql & WrapInSingleQuotes(myList.Item(i))
+        Next
+
+        If mySql <> "" Then
+          mySql = "SELECT DISTINCT Needs FROM SIBBNeedsTable WHERE SIBB IN (" & mySql & ")"
+          
+          If DBReturnResults(mySql, rs, db) Then
+            While Not rs.EOF
+              If Not IsNull(rs("Needs")) Then
+                Dim myObject : myObject = CStr(rs("Needs"))
+
+                If myObject <> "" Then
+                  If Not myUsesArrayList.Contains(myObject) Then myUsesArrayList.Add(myObject)
+                End If
+              End If
+  
+              rs.MoveNext
+            Wend
+          End If
+        End If
+       
+        For i = 0 To myUsesArrayList.Count() - 1
+          If debugFlag Then LogError "Scripts.txt::ServiceBuilder::RunScript() SIBBs need " & WrapInQuotes(myUsesArrayList.Item(i))
+
+          If baseUsesArrayList.Contains(myUsesArrayList.Item(i)) Then
+            If debugFlag Then LogError "Scripts.txt::ServiceBuilder::RunScript() already have " & WrapInQuotes(myUsesArrayList.Item(i)) & " via Base"
+          Else
+            myList.Add(myUsesArrayList.Item(i))
+          End If
+        Next
+
+        Set rs = Nothing
+
+        ' Pull in the source code for each SIBB function and needs used
+        For i = 0 To myList.Count() - 1
+          If debugFlag Then LogError "Scripts.txt::ServiceBuilder::RunScript() looking for code for " & WrapInQuotes(myList.Item(i))
+
+          mySql = "SELECT code FROM scripts WHERE FunctionName = " & WrapInSingleQuotes(myList.Item(i)) & " ORDER BY lineNumber"
+          count = 0
+
+          If DBReturnResults(mySql, rs, db) Then
+            While Not rs.EOF
+              If Not IsNull(rs("Code")) Then
+                If Len(myCode) > 0 Then myCode = myCode & vbCrLf
+
+                myCode = myCode & rs("Code")
+                count = count + 1
+              End If
+      
+              rs.MoveNext
+            Wend
+
+            Set rs = Nothing
+
+            If count = 0 Then LogError "Scripts.txt::ServiceBuilder::Runscript() Error: Could not find code in Scripts table for " & WrapInQuotes(myList.Item(i))            
+
+            If debugFlag Then LogError "Scripts.txt::ServiceBuilder::Runscript() found " & count & " lines of code for " & WrapInQuotes(myList.Item(i))
+          Else
+            LogError "Scripts.txt::ServiceBuilder::Runscript() Error: Looking for code for " & WrapInQuotes(myList.Item(i))
+          End If
+        Next
+      End If
+
+      Set myList = Nothing
+    End If
+
+    db.Close
+    Set db = Nothing
+
+    If debugFlag Then LogError "Scripts.txt::ServiceBuilder::RunScript() about to execute"
+
+    ExecuteGlobal myCode
+  Else
+    LogError "Scripts.txt::ServiceBuilder::RunScript() Error: DBReturnResults() failed"
+  End If
+
+  Set myUsesArrayList = Nothing
+  Set baseUsesArrayList = Nothing
+End Sub

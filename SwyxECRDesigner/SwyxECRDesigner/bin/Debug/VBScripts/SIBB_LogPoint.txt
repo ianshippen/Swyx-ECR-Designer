@@ -1,0 +1,24 @@
+Function SIBB_LogPoint(ByRef p_data)
+ Dim myUseExit, myArray
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_LogPoint(" & WrapInQuotes(p_data) & ")"
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")  
+
+  If UBound(myArray) = 1 Then
+    Dim myLogPoint : myLogPoint = CInt(myArray(0))
+    Dim firstTimeOnly : firstTimeOnly = myArray(1)
+    Dim mySql
+
+    myUseExit = 0
+
+    mySql = "EXEC SP_UPDATE_SB_LOG_POINT_TABLE " & CallId() & ", " & WrapInSingleQuotes(CreateTimestamp()) & ", " & myLogPoint & ", " & WrapInSingleQuotes(firstTimeOnly)
+
+    DBExecute(mySql)
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_LogPoint returns " & myUseExit
+
+  SIBB_LogPoint = myUseExit
+End Function

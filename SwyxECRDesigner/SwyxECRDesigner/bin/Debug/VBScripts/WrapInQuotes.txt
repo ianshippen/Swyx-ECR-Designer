@@ -1,0 +1,3 @@
+Function WrapInQuotes(ByRef p)
+	WrapInQuotes = chr(34) & p & chr(34)
+End Function

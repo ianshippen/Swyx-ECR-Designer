@@ -1,0 +1,28 @@
+Function IsAgentFree(ByRef p)
+	Dim myUsers, result, myUser
+
+	On Error Resume Next
+	result = False
+
+	If debugFlag Then LogError "IsAgentFree(" & WrapInQuotes(p) & ") called"
+
+	If GetUserByAddressWrapper(p, myUsers) Then
+		For Each myUser in myUsers
+			' Check for state = 2 (logged in)
+     			If myUser.state = 2 Then
+          			'Is client really available ?
+          			If PBXScript.IsUserOrGroupBusy(p) = 0 Then result = true
+     			End If
+		Next
+
+		Set myUsers = Nothing
+	Else
+		LogError "IsAgentFree(" & WrapInQuotes(p) & ") could not get user by address"
+		LogError "IsAgentFree: " & Err.Source
+		LogError "IsAgentFree: " & Err.Description
+	End If
+
+	IsAgentFree = result
+
+	If debugFlag Then LogError "IsAgentFree(" & WrapInQuotes(p) & ") returned " & result
+End Function

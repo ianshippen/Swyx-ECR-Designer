@@ -1,0 +1,17 @@
+﻿Function GenerateDatabaseConnectionString()
+	GenerateDatabaseConnectionString = "Provider=SQLOLEDB;Data Source=" & GetDataSource() & ";Initial Catalog=" & DATABASE & ";User Id=" & USERID & ";Password=" & PASSWORD
+End Function
+
+Function GetDataSource()
+  Dim x : x = DATA_SOURCE
+
+  If STANDBY_MACHINE_NAME <> "" Then
+    Dim y : Set y = CreateObject("WScript.Network") 'KEEP AS WSCRIPT
+
+    If LCase(STANDBY_MACHINE_NAME) = LCase(y.ComputerName) Then x = STANDBY_DATA_SOURCE
+
+    Set y = Nothing
+  End If
+
+  GetDataSource = x
+End Function

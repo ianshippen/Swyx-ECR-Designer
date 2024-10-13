@@ -1,0 +1,22 @@
+Function SIBB_ChangeQueueState(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_ChangeQueueState(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray, myCallId, myState
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")
+
+  If UBound(myArray) = 1 Then
+    myCallId = myArray(0)
+    myState = myArray(1)
+
+    ChangeQueueState myCallId, myState
+    myUseExit = 0
+  Else
+    LogError "ServiceBuilder::SIBB_ChangeQueueState() wrong number of parameters"
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_ChangeQueueState returns " & myUseExit
+
+  SIBB_ChangeQueueState = myUseExit
+End Function

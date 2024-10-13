@@ -1,0 +1,56 @@
+Class SIBBClass
+  Public nodeNumber, nodeType, data, outputs, title, internalReference
+
+  Private Sub Class_Initialize
+    nodeNumber = -1
+    nodeType = ""
+    data = ""
+    outputs = ""
+    title = ""
+    internalReference = ""
+  End Sub
+End Class
+
+Class SIBBListClass
+  private myCollection
+  private myDebugFlag
+
+  Private Sub Class_Initialize
+    Set myCollection = CreateObject("System.Collections.ArrayList")
+  End Sub
+
+  Private Sub Class_Terminate
+    Set myCollection = Nothing
+  End Sub
+
+  Public Sub Add(p_nodeNumber, p_nodeType, p_data, p_outputs, p_title, p_internalReference)
+    Dim x
+
+    If myDebugFlag Then LogError "SIBBListClass::Add(" & p_nodeNumber & ", " & WrapInQuotes(p_nodeType) & ", " & WrapInQuotes(p_data) & ", " & WrapInQuotes(p_outputs) & ", " & WrapInQuotes(p_title) & ", " & WrapInQuotes(p_internalReference)
+    Set x = New SIBBClass
+    x.nodeNumber = p_nodeNumber
+    x.nodeType = p_nodeType
+    x.data = p_data
+    x.outputs = p_outputs
+    x.title = p_title
+    x.internalReference = p_internalReference
+    myCollection.Add x
+  End Sub
+
+  Public Sub GetEntry(ByVal p_index, ByRef p_nodeNumber, ByRef p_nodeType, ByRef p_data, ByRef p_outputs, ByRef p_title, ByRef p_internalReference)
+    p_nodeNumber = myCollection.Item(p_index).nodeNumber
+    p_nodeType = myCollection.Item(p_index).nodeType
+    p_data = myCollection.Item(p_index).data
+    p_outputs = myCollection.Item(p_index).outputs
+    p_title = myCollection.Item(p_index).title
+    p_internalReference = myCollection.Item(p_index).internalReference
+  End Sub
+
+  Public Function GetCount()
+    GetCount = myCollection.Count()
+  End Function
+
+  Public Sub Debug(p_debugFlag)
+    myDebugFlag = p_debugFlag
+  End Sub
+End Class

@@ -1,0 +1,356 @@
+Sub Bootstrap(ByRef p_scriptName)
+  If debugFlag Then LogError "ServiceBuilder::Bootstrap(" & WrapInQuotes(p_scriptName) & ")"
+
+  ' Loop through each node in the database for this script
+  Dim mySQL, rs, db, nodeList, running
+
+  mySQL = "SELECT nodeNumber, nodeType, data, outputs, title, internalReference FROM ServiceBuilderTable WHERE scriptName = " & WrapInSingleQuotes(p_scriptName) & " ORDER BY nodeNumber"
+  Set db = Nothing
+
+  If DBReturnResults(mySQL, rs, db) Then
+    Dim i, nodeIndex, count
+
+    Set nodeList = New SIBBListClass
+    nodeIndex = 0
+    running = True
+    count = 0
+
+    While Not rs.EOF
+      ' Add every node to the list
+      nodeList.Add CInt(rs("nodeNumber")), rs("nodeType"), rs("data"), rs("outputs"), rs("title"), rs("internalReference") 
+      count = count + 1
+      rs.MoveNext
+    Wend
+
+    If debugFlag Then LogError "ServiceBuilder::Bootstrap() found " & count & " nodes in call flow"
+
+    Set rs = Nothing
+    db.Close
+    Set db = Nothing
+
+    ' Run from the first node
+    While running
+      Dim myState : myState = ""
+      Dim waiting : waiting = True
+      
+      If nodeIndex < nodeList.GetCount() Then
+        Dim nodeNumber, nodeType, data, outputs, myArray, outputIndex, title, internalReference, tempNodeIndex, eventData
+
+        nodeList.GetEntry nodeIndex, nodeNumber, nodeType, data, outputs, title, internalReference
+
+        If debugFlag Then 
+          If nodeType = "SIBB_Start" Or nodeType = "SIBB_VBScript" Then
+            Dim myLines : myLines = Split(data, vbCrLf)
+            Dim myLine
+
+            LogError "ServiceBuilder::Bootstrap() nodeIndex = " & nodeIndex & ", nodeType =  " & nodeType & ", title = " & WrapInQuotes(title) & ", internalReference = " & WrapInQuotes(internalReference) & ", data to follow .."
+            
+            For Each myLine In myLines
+              LogError myLine
+            Next
+          Else
+            LogError "ServiceBuilder::Bootstrap() nodeIndex = " & nodeIndex & ", nodeType =  " & nodeType & ", title = " & WrapInQuotes(title) & ", internalReference = " & WrapInQuotes(internalReference) & ", data = " & WrapInQuotes(data)
+          End If
+        End If
+
+        If nodeType = "SIBB_VBScript" Then
+          Dim searching : searching = True
+          Dim endIndex : endIndex = 1
+          
+          While searching
+            Dim myIndex : myIndex = InStr(endIndex, data, "$")
+            
+            If myIndex > 0 Then
+              Dim gettingName : gettingName = True
+              Dim myName : myName = ""
+              Dim swapIt : swapIt = True
+
+              endIndex = myIndex + 1
+
+              While gettingName
+                If endIndex > Len(data) Then
+                  gettingName = False
+                Else
+                  If IsAlphaNumeric(Mid(data, endIndex, 1)) Then
+                    endIndex = endIndex + 1
+                  Else
+                    gettingName = False
+                  End If
+                End If
+              Wend
+              
+              myName = Mid(data, myIndex, endIndex - myIndex)
+              
+              ' Is name surrounded by quotes ?
+              If myIndex > 1 And Len(data) >= endIndex Then
+                If Mid(data, myIndex - 1, 1) = Chr(34) And Mid(data, endIndex, 1) = Chr(34) Then swapIt = False
+              End If
+
+              If swapIt Then
+                ' Look for this name in the variables dictionary
+                If variablesDictionary.Exists(myName) Then
+                  myName = WrapInQuotes(variablesDictionary.Item(myName))
+                Else
+                  LogError "ServiceBuilder::Bootstrap() Error: Cannot find variable " & WrapInQuotes(myName) & " in variablesDictionary"
+                End If
+              
+                data = Left(data, myIndex - 1) & myName & Mid(data, endIndex)
+              End If
+            Else
+              searching = False
+            End If
+          Wend
+
+          eventData = ""
+        Else
+          ' Do any of the data parameters start with a $ ?  
+          myArray = Split(data, ",")
+
+          For i = 0 To UBound(myArray)
+            If Len(myArray(i)) > 1 Then
+              If Left(myArray(i), 1) = "$" Then
+                ' Look for this name in the variables dictionary
+                If variablesDictionary.Exists(myArray(i)) Then
+                  myArray(i) = variablesDictionary.Item(myArray(i))
+
+                  ' If any element of the array contains a comma, bracket it
+                  If InStr(myArray(i), ",") > 0 Then myArray(i) = "{" & myArray(i) & "}"
+                Else
+                  LogError "ServiceBuilder::Bootstrap() Error: Cannot find variable " & WrapInQuotes(myArray(i)) & " in variablesDictionary"
+                End If
+              End If
+            End If
+          Next
+
+          data = Join(myArray, ",")
+          eventData = data
+        End If
+
+        If debugFlag Then 
+          If nodeType = "SIBB_Start" Or nodeType = "SIBB_VBScript" Then
+            Dim myLines1 : myLines1 = Split(data, vbCrLf)
+            Dim myLine1
+
+            LogError "ServiceBuilder::Bootstrap() data becomes .."
+
+            For Each myLine1 in myLines1
+              LogError myLine1
+            Next
+          Else
+            LogError "ServiceBuilder::Bootstrap() data becomes " & WrapInQuotes(data)
+          End If
+        End If
+
+        mySql = "INSERT INTO ServiceBuilderEventTable VALUES (" & WrapInSingleQuotes(CreateTimeStamp()) & ", " & WrapInSingleQuotes(p_scriptName) & ", " & CallId() & ", " & nodeIndex & ", " & WrapInSingleQuotes(SingleQuoteCheck(eventData)) & ", NULL, NULL)"
+        tempNodeIndex = nodeIndex
+        DBExecute mySql
+
+        ' Trap the call here to single step debug, we have an entry in the deebug table for this callid with a state of STOP
+        While waiting
+          mySql = "SELECT * FROM ServiceBuilderDebugTable WHERE callId = " & CallID() & " OR callId = 0"
+        
+          If DBReturnResults(mySQL, rs, db) Then
+            If Not rs.EOF Then
+              If Not IsNull(rs("State")) Then myState = rs("State")
+            End If
+
+            'If debugFlag Then LogError "ServiceBuilder::Bootstrap() found " & count & " nodes in call flow"
+  
+            Set rs = Nothing
+            db.Close
+            Set db = Nothing
+          End If
+
+          Select Case LCase(myState)
+            Case "wait"
+              PBXScript.Sleep 250
+
+            Case "step"
+              waiting = False
+              mySql = "UPDATE ServiceBuilderDebugTable SET State = 'WAIT' WHERE CallId = 0"
+              DBExecute mySql
+
+            Case Else
+              waiting = False
+          End Select
+        Wend
+
+	Select Case nodeType
+          Case "SIBB_TODDOW"
+            outputIndex = SIBB_TODDOW(data)
+
+          Case "SIBB_PlayAnnouncement"
+            outputIndex = SIBB_PlayAnnouncement(data)
+
+          Case "SIBB_Connect"
+            outputIndex = SIBB_Connect(data)
+
+          Case "SIBB_GetDTMFString"
+            outputIndex = SIBB_GetDTMFString(data)
+  
+          Case "SIBB_GroupAvailable"
+            outputIndex = SIBB_GroupAvailable(data)
+
+          Case "SIBB_LongestWaiting"
+            outputIndex = SIBB_LongestWaiting(data)
+
+          Case "SIBB_Hold"
+            outputIndex = SIBB_Hold(data)
+
+          Case "SIBB_Pause"
+            outputIndex = SIBB_Pause(data)
+
+          Case "SIBB_Sleep"
+            outputIndex = SIBB_Sleep(data)
+
+          Case "SIBB_DayOfWeek"
+            outputIndex = SIBB_DayOfWeek(data)
+
+          case "SIBB_TimeOfDay"
+            outputIndex = SIBB_TimeOfDay(data)
+
+          Case "SIBB_Voicemail"
+            outputIndex = SIBB_Voicemail(data)
+
+          Case "SIBB_Start"
+            outputIndex = SIBB_Start(data)
+
+          Case "SIBB_OnDisconnect"
+            outputIndex = SIBB_OnDisconnect(data)
+
+          Case "SIBB_Done"
+            outputIndex = SIBB_Done(data)
+
+          Case "SIBB_Skip"
+            outputIndex = SIBB_Skip(data)
+
+          Case "SIBB_VBScript"
+            outputIndex = SIBB_VBScript(data)
+
+          Case "SIBB_GetDTMFDigit"
+            outputIndex = SIBB_GetDTMFDigit(data)
+
+          Case "SIBB_Holiday"
+            outputIndex = SIBB_Holiday(data)
+
+          Case "SIBB_AddCallToQueue"
+	    outputIndex = SIBB_AddCallToQueue(data)
+
+          Case "SIBB_RemoveCallFromQueue"
+            outputIndex = SIBB_RemoveCallFromQueue(data)
+
+	  Case "SIBB_TopOfQueue"
+	    outputIndex = SIBB_TopOfQueue(data)
+
+	  Case "SIBB_GetPositionInQueue"
+	    outputIndex = SIBB_GetPositionInQueue(data)
+
+	  Case "SIBB_ChangeQueueState"
+	    outputIndex = SIBB_ChangeQueueState(data)
+
+	  Case "SIBB_QueuePause"
+	    outputIndex = SIBB_QueuePause(data)
+
+          Case "SIBB_GetCurrentTime"
+	    outputIndex = SIBB_GetCurrentTime(data)
+
+          Case "SIBB_HasTimeElapsed"
+            outputIndex = SIBB_HasTimeElapsed(data)
+
+          Case "SIBB_GetQueueLength"
+            outputIndex = SIBB_GetQueueLength(data)
+
+          Case "SIBB_FirstTime"
+            data = CStr(nodeIndex)
+            outputIndex = SIBB_FirstTime(data)
+
+          Case "SIBB_LogPoint"
+	    outputIndex = SIBB_LogPoint(data)
+
+	  Case "SIBB_LogAgentStatus"
+            outputIndex = SIBB_LogAgentStatus(data)
+
+          Case Else
+            LogError "ServiceBuilder::Bootstrap() unexpected nodeType of " & WrapInQuotes(nodeType)
+            outputIndex = -1
+        End Select
+
+        If outputIndex = -1 Then
+          running = False
+
+          If debugFlag Then
+            LogError "ServiceBuilder::Bootstrap() terminating Call Machine"
+
+            If variablesDictionary.Exists("$returnCode") Then
+              LogError "ServiceBuilder::Bootstrap() $returnCode is: " & WrapInQuotes(variablesDictionary.Item("$returnCode"))
+            Else
+              LogError "ServiceBuilder::Bootstrap() $returnCode does not exist"
+            End If
+          End If
+        Else
+          nodeIndex = MapOutput(outputIndex, outputs)
+        End If
+
+        mySql = "INSERT INTO ServiceBuilderEventTable VALUES (" & WrapInSingleQuotes(CreateTimeStamp()) & ", " & WrapInSingleQuotes(p_scriptName) & ", " & CallId() & ", " & tempNodeIndex & ", " & WrapInSingleQuotes(SingleQuoteCheck(eventData)) & ", " & outputIndex & ", " & nodeIndex & ")"
+        DBExecute mySql
+      Else
+        running = False
+        LogError "ServiceBuilder::Boostrap() error, ran out of nodes"
+      End If
+    Wend
+  Else
+    LogError "ServiceBuilder::Bootstrap() DBReturnResults() failed"
+  End If
+End Sub
+
+Function MapOutput(ByVal p_nodeOutput, ByRef p_outputs)
+  Dim result, myArray
+
+  result = -1
+  myArray = Split(p_outputs, ",")
+
+  If p_nodeOutput >= 0 And p_nodeOutput <= UBound(myArray) Then result = CInt(myArray(p_nodeOutput))
+
+  If debugFlag Then LogError "ServiceBuilder::MapOutput(" & p_nodeOutput & ", " & WrapInQuotes(p_outputs) & ") -> " & result
+
+  MapOutput = result
+End Function
+
+' SIBBClass and SIBBListClass moved to own file SIBBClass.txt
+
+Function RemoveBrackets(ByRef p)
+  Dim result : result = p
+
+  If Left(result, 1) = "{" And Right(result, 1) = "}" Then result = Mid(Result, 2, Len(result) - 2)
+
+  RemoveBrackets = result
+End Function
+
+Function CreateTimeStamp()
+  Dim ms : ms = Timer
+  Dim myNow : myNow = Now
+  Dim result : result = ConvertDateToISO(myNow)
+  Dim msString : msString = CStr(ms)
+
+  If InStr(msString, ".") > 0 Then 
+    msString = Mid(msString, InStr(msString, ".") + 1)
+  Else
+    msString = "000"
+  End If
+
+  While Len(msString) < 3
+    msString = msString & "0"
+  Wend
+
+  result = result & "." & Left(msString, 3)
+  CreateTimeStamp = result
+End Function
+
+Function IsAlphaNumeric(ByRef p)
+  Dim result : result = False
+  Dim x : x = Asc(p)
+  
+  If (x >= Asc("0") And x <= Asc("9")) Or (x >= Asc("A") And x <= Asc("Z")) Or (x >= Asc("a") And x <= Asc("z")) Then result = True
+  
+  IsAlphaNumeric = result
+End Function

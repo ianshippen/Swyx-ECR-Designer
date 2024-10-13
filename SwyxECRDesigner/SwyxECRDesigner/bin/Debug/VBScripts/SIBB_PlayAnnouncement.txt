@@ -1,0 +1,30 @@
+Function SIBB_PlayAnnouncement(p_filename)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_PlayAnnouncement(" & WrapInQuotes(p_filename) & ") called"
+
+  Dim useExit, myRCDummy
+
+  useExit = -1
+
+  If p_filename = "" Then
+    'LogError "ServiceBuilder::PlayAnnouncement() no announcement specified"
+    useExit = 0
+  Else
+    useExit = gsePlaySoundEx2(p_filename, "", False, myRCDummy, True, False, "", False)
+
+    Select Case useExit
+      Case gseStatePlayed
+        useExit = 0
+      
+      Case gseStateDTMFKeyPressed
+        useExit = 1
+    
+      Case gseStateDisconnected
+        useExit = 2
+
+    End Select
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_PlayAnnouncement() returning " & useExit
+
+  SIBB_PlayAnnouncement = useExit
+End Function

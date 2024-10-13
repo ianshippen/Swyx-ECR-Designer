@@ -1,0 +1,44 @@
+Function SIBB_Voicemail(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Voicemail(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")  
+
+  If UBound(myArray) = 9 Then
+    Dim useStdVoicemail : useStdVoicemail = CBool(myArray(0))
+    Dim playWelcomeAnnouncement : playWelcomeAnnouncement = CBool(myArray(1))
+    Dim welcomeAnnouncement : welcomeAnnouncement = myArray(2)
+    Dim useDTMFasCallerId : useDTMFasCallerId = CBool(myArray(3))
+    Dim callerIdAnnouncement : callerIdAnnouncement = myArray(4)
+    Dim useAnnouncement : useAnnouncement = CBool(myArray(5))
+    Dim announcement : announcement = myArray(6)
+    Dim maxDuration : maxDuration = myArray(7)
+    Dim emailAddress : emailAddress = myArray(8)
+    Dim saveFilenameInVariable : saveFilenameInVariable = CBool(myArray(9))
+    Dim myResult
+
+    myUseExit = gseVoicemailEx7(playWelcomeAnnouncement, welcomeAnnouncement, useDTMFasCallerId, callerIdAnnouncement, useAnnouncement, announcement, maxDuration, emailAddress, "", saveFilenameInVariable, myResult, False, False, "", "", "", True, "INBOX", False, True, "", True, False, False)
+  Else
+    LogError "ServiceBuilder::Voicemail(" & WrapInQuotes(p_data) & " - invalid data"
+  End If
+
+  Select Case myUseExit
+    Case gseStateTimeout
+      myUseExit = 0
+
+    Case gseStateRecorded
+      myUseExit = 1
+
+    Case gseStateDisconnected
+      myUseExit = 2
+
+    Case Else
+      myUseExit = -1
+  End Select
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Voicemail() returning " & myUseExit & ", " & WrapInQuotes(p_result)
+
+  SIBB_Voicemail= myUseExit
+End Function

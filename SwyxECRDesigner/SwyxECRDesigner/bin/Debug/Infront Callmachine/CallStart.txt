@@ -1,0 +1,8 @@
+databaseName = "OpenQueue"
+tableName = "WallboardDataTable"
+queueName = CalledNumber()
+missedCallDelta = 0
+abandonedCallDelta = 0
+agentTimeout = 10
+groupTimeout = 20
+slaAnswerTimeTarget = 10

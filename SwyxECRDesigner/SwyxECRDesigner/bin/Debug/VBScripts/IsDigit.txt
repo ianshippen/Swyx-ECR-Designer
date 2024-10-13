@@ -1,0 +1,10 @@
+Function IsDigit(p)
+  Dim result
+
+  result = False
+
+  If Asc(p) >= Asc("0") And Asc(p) <= Asc("9") Then result = True
+  
+  IsDigit = result
+End Function
+

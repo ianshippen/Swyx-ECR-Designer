@@ -1,0 +1,9 @@
+Function SIBB_Start(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Start() called"
+
+  SIBB_Start = 0
+  
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Start() exiting with 0"
+End Function
+
+  

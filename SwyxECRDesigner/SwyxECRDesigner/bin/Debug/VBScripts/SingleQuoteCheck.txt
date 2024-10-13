@@ -1,0 +1,3 @@
+Function SingleQuoteCheck(ByRef p)
+	SingleQuoteCheck = Replace(p, "'", "''")
+End Function

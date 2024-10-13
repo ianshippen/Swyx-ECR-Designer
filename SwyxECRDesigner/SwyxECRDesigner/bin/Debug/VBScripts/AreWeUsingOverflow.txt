@@ -1,0 +1,34 @@
+Function AreWeUsingOverflow(p_threshold, p_seconds)
+  Dim mySQLStatement, foundError, db, connectionString, result, rs
+	
+' LogError "AreWeUsingOverflow()"
+  result = 0
+  mySQLStatement = "EXEC SP_USE_OVERFLOW " & p_threshold & ", " & p_seconds
+  foundError = False
+  Set db = CreateObject("ADODB.Connection")
+  connectionString = GenerateDatabaseConnectionString()
+  db.Open connectionString
+              
+  If Err = 0 Then
+    Set rs = db.Execute(mySQLStatement)
+  	
+    If Err = 0 Then
+      ' Anything at all returned ?
+      If Not rs.EOF then
+        ' Yes.
+    	result = rs("useOverflow")
+      End If
+    Else
+      LogError "Error in AreWeUsingOverflow() : db.Execute('" & mySQLStatement & "') failed"
+      LogError "Error code = " & CStr(Hex(Err))
+      LogError "Error description = " & Err.Description
+    End If
+  Else
+    LogError "Error in AreWeUsingOverflow() : Could not connect to database with connection string = '" & connectionString & "'"
+    LogError "Error code = " & CStr(Hex(Err))
+    LogError "Error description = " & Err.Description
+  End If
+  
+  Set db = nothing
+  AreWeUsingOverflow = result
+End Function

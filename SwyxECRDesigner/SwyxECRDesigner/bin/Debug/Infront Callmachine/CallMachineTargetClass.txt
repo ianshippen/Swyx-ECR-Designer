@@ -1,0 +1,67 @@
+Class CallMachineTargetClass
+  Public name
+  Private target, m_debug
+
+'  Private Sub Class_Initialize(ByRef p_name)
+  '  name = p_name
+  '  target = ""
+ ' End Sub
+
+  Public Default Function Init(ByRef p_name)
+    name = p_name
+    target = ""
+    m_debug = False
+
+    Set Init = Me
+  End Function
+
+  Public Sub SetName(ByRef p)
+    name = p
+  End Sub
+
+  Public Sub ClearTarget()
+    target = ""
+  End Sub
+
+  Public Sub AddTarget(ByRef p)
+    If target <> "" Then target = target & vbCrLf
+
+    target = target & p
+  End Sub
+
+  Public Function GetTarget()
+    GetTarget = target
+  End Function
+
+  Public Sub Run()
+    If m_debug Then LogError "CallMachineTargetClass::" & name & " Run(" & WrapInQuotes(Replace(target, vbCrLf, " : ")) & ")"
+    If target <> "" Then ExecuteGlobal target
+  End Sub
+
+  Public Sub BindTargetFromDB()
+    Dim rs, db, myCode
+  
+    myCode = ""
+    Set db = Nothing
+
+    If DBReturnResults("SELECT Code FROM Scripts WHERE FunctionName = " & WrapInSingleQuotes(name) & " ORDER BY lineNumber", rs, db) Then
+      While Not rs.EOF
+        If Not IsNull(rs("Code")) Then
+          If Len(myCode) > 0 Then myCode = myCode & vbCrLf
+
+          myCode = myCode & rs("Code")
+          rs.MoveNext
+        End If
+      Wend
+
+      rs.close
+      db.close
+      Set db = Nothing
+      target = myCode
+    End If
+  End Sub 
+
+  Public Sub SetDebug(p)
+    m_debug = p
+  End Sub
+End Class

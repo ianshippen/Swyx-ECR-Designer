@@ -1,0 +1,35 @@
+Function SIBB_HasTimeElapsed(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_HasTimeElapsed(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")  
+
+  If UBound(myArray) = 2 Then
+    Dim fromTime, toTime
+    Dim thresholdSeconds : thresholdSeconds = CInt(myArray(2))
+
+    If LCase(Left(myArray(0), 3)) = "now" Then
+      fromTime = Now()
+    Else
+      fromTime = CDate(myArray(0))
+    End If
+    
+    If LCase(Left(myArray(1), 3)) = "now" Then
+      toTime = Now()
+    Else
+      toTime = CDate(myArray(1))
+    End If
+    
+    myUseExit = 1
+
+    If DateDiff("s", fromTime, toTime) > thresholdSeconds Then myUseExit = 0
+
+    If debugFlag Then LogError "ServiceBuilder::SIBB_HasTimeElapsed returns " & myUseExit
+  Else
+    LogError "ServiceBuilder::SIBB_HasTimeElapsed(" & WrapInQuotes(p_data) & ") - invalid data"
+  End If
+
+  SIBB_HasTimeElapsed = myUseExit
+End Function

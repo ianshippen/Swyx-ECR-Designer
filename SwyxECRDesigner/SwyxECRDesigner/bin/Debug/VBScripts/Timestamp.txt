@@ -1,0 +1,3 @@
+Sub Timestamp(byref p_table, byref p_myKey, byval p_callid, byref p_fieldName)
+	DBExecute "EXEC SP_TIMESTAMP " & WrapInSingleQuotes(p_table) & ", " & WrapInSingleQuotes(p_myKey) & ", " & p_callId & ", " & WrapInSingleQuotes(p_fieldName)
+End Sub

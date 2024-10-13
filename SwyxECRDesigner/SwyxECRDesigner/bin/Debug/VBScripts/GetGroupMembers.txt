@@ -1,0 +1,34 @@
+Sub GetGroupMembers(ByRef p_target, ByRef p_info)
+	Dim result, myKey
+
+	On Error Resume Next
+	
+	If debugFlag Then LogError "GetGroupMembers(" & WrapInQuotes(p_target) & ") called"
+
+	LogTraceDB "GetGroupMembers.txt", 0, "GetGroupMembers(" & WrapInQuotes(p_target) & ") called"
+	myKey = AddAgentDataMasterRecord(p_target)
+
+	'If IsVarTrue("$wildCardSwyxGroupEnabled") Then
+      		'result = GetUserByAddressWrapper(WildcardSwyxgroup(p_target & " *"), p_info)
+	'Else
+      		result = GetUserByAddressWrapper(p_target, p_info)
+	'End If
+
+      	If result Then
+          	'Dim myUser
+
+          	'For Each myUser In p_info
+			'LogTraceDB "GetGroupMembers.txt", 0, "GetGroupMembers : GetUserByAddress() returned Name = " & WrapInQuotes(myUser.Name) & ", State = " & myUser.State
+          		'AddAgentDataRecord myKey, myUser.UserId, myUser.State
+		'Next
+		AddAgentDataRecordsFromInfo myKey, p_info
+      	Else
+		LogError "GetGroupMembers(" & WrapInQuotes(p_target) & ") could not Get User By Address"
+		LogError "GetGroupMembers: " & Err.Source
+		LogError "GetGroupMembers: " & Err.Description
+		LogTraceDB "GetGroupMembers.txt", 1, "GetGroupMembers(" & WrapInQuotes(p_target) & ") could not Get User By Address"  
+    	End If
+
+	PBXScript.Sleep 100
+End Sub
+

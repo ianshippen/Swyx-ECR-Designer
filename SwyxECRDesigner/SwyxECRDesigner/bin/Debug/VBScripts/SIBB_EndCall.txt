@@ -1,0 +1,11 @@
+Function SIBB_EndCall(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_EndCall(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit : myUseExit = -1
+
+  If EndCall(CInt(p_data)) Then myUseExit = 0
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_EndCall() returned " & myUseExit
+
+  SIBB_EndCall = myUseExit
+End Function

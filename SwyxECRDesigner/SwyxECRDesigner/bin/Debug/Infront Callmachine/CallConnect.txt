@@ -1,0 +1,5 @@
+answerTime = Timer
+ringSeconds = Int(answerTime - ringStartTime)
+myTemp  = DeltaStatsField(databaseName, tableName, queueName, "callsWaiting", -1)
+myTemp = DeltaStatsField(databaseName, tableName, queueName, "answeredCalls", 1)
+if ringSeconds <= slaAnswerTimeTarget then myTemp = DeltaStatsField(databaseName, tableName, queueName, "answeredWithinSLACalls", 1)

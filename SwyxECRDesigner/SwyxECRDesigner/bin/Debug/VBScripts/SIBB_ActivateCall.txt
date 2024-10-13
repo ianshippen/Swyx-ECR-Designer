@@ -1,0 +1,22 @@
+Function SIBB_ActivateCall(ByRef p_data)
+  Dim myUseExit
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_ActivateCall(" & WrapInQuotes(p_data) & ")"
+
+  myUseExit = gseActivate()
+
+  Select Case myUseExit
+    Case gseStateActivated
+      myUseExit = 0
+
+    Case gseStateDisconnected
+      myUseExit = 1
+
+    Case Else
+      myUseExit = -1
+  End Select
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_ActivateCall returns " & myUseExit
+
+  SIBB_ActivateCall = myUseExit
+End Function

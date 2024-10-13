@@ -1,0 +1,5 @@
+If missedCallDelta <> 0 Then myTemp = DeltaStatsField(databaseName, tableName, queueName, "missedCalls", missedCallDelta)
+If abandonedCallDelta <> 0 Then
+myTemp = DeltaStatsField(databaseName, tableName, queueName, "abandonedCalls", abandonedCallDelta)
+myTemp = DeltaStatsField(databaseName, tableName, queueName, "callsWaiting", -1)
+End If

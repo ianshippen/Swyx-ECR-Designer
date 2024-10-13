@@ -1,0 +1,13 @@
+Function WildcardSwyxGroup(ByRef p)
+  Dim result 
+
+  If debugFlag Then LogError "WildcardSwyxGroup(" & WrapInQuotes(p) & ") called"
+
+  result = DBReadScalar("select name from [IpPbx].[dbo].[Groups] where Name like replace(" & WrapInSingleQuotes(p) & ", '*', '%')", "Name")
+
+  If result = "" Then result = Left(p, Len(p) - 2)
+
+  If debugFlag Then LogError "WildcardSwyxGroup(" & WrapInQuotes(p) & ") returning " & WrapInQuotes(result)
+
+  WildCardSwyxGroup = result
+End Function

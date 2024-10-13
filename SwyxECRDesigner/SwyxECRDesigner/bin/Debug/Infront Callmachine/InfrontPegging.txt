@@ -1,0 +1,65 @@
+Dim missedCallDelta, answerTime, ringStartTime, databaseName, tableName, queueName, abandonedCallDelta, ringSeconds, slaAnswerTimeTarget
+
+databaseName = "OpenQueue"
+tableName = "MainInboundRule_Table"
+queueName = CalledNumber()
+missedCallDelta = 0
+abandonedCallDelta = 0
+slaAnswerTimeTarget = 20
+
+Sub OnEnableMissedCalls()
+    missedCallDelta = 1
+End Sub
+
+Sub EnableAbandonedCalls()
+    Dim result
+
+    abandonedCallDelta = 1
+    missedCallDelta = 0
+    ringStartTime = Timer
+    result = DeltaStatsField(databaseName, tableName, queueName, "totalCalls", 1)
+    result = DeltaStatsField(databaseName, tableName, queueName, "callsWaiting", 1)
+    SetValueForCallId databaseName, "DeliveredTimeTable", CallID(), "deliveredTime", ConvertDateToISO(Now)
+End Sub
+
+Sub OnAnswer()
+    Dim result
+
+    answerTime = Timer
+    ringSeconds = Int(answerTime - ringStartTime)
+    result = DeltaStatsField(databaseName, tableName, queueName, "answeredCalls", 1)
+    result = DeltaStatsField(databaseName, tableName, queueName, "callsWaiting", -1)
+  
+    If ringSeconds <= slaAnswerTimeTarget Then
+	result = DeltaStatsField(databaseName, tableName, queueName, "answeredWithinSLACalls", 1)
+    End If  
+End Sub
+
+Sub OnDecCallsWaiting()
+    Dim result
+
+    abandonedCallDelta = 0
+
+    answerTime = Timer
+    ringSeconds = Int(answerTime - ringStartTime)
+
+    result = DeltaStatsField(databaseName, tableName, queueName, "answeredCalls", 1)
+    result = DeltaStatsField(databaseName, tableName, queueName, "callsWaiting", -1)
+
+    If ringSeconds <= slaAnswerTimeTarget Then
+        result = DeltaStatsField(databaseName, tableName, queueName, "answeredWithinSLACalls", 1)
+    End If
+End Sub
+
+Sub OnDisconnected()
+    Dim result
+
+    If missedCallDelta <> 0 Then
+	result = DeltaStatsField(databaseName, tableName, queueName, "missedCalls", missedCallDelta)
+    End If
+
+    If abandonedCallDelta <> 0 Then
+	result = DeltaStatsField(databaseName, tableName, queueName, "abandonedCalls", abandonedCallDelta)
+	result = DeltaStatsField(databaseName, tableName, queueName, "callsWaiting", -1)
+    End If
+End Sub

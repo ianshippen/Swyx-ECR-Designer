@@ -1,0 +1,28 @@
+Function SIBB_TopOfQueue(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_TopOfQueue(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")  
+
+  If UBound(myArray) = 3 Then
+    Dim myCallId : myCallId = CInt(myArray(0))
+    Dim queueTimeout : queueTimeout = CInt(myArray(1))
+    Dim maxQueueLength : maxQueueLength = CInt(myArray(2))
+    Dim storeInVariable : storeInVariable = "$" & myArray(3)
+    
+    myUseExit = GetPositionInQueue(myCallId, queueTimeout, maxQueueLength)
+    
+    If storeInVariable <> "$" Then SetVar storeInVariable, CStr(myUseExit + 1)
+
+    If myUseExit > 1 Then myUseExit = 1
+    If myUseExit = -1 Then myUseExit = 2
+
+    If debugFlag Then LogError "ServiceBuilder::SIBB_TopOfQueue returns " & myUseExit
+  Else
+    LogError "ServiceBuilder::SIBB_TopOfQueue(" & WrapInQuotes(p_data) & ") - invalid data"
+  End If
+
+  SIBB_TopOfQueue = myUseExit
+End Function

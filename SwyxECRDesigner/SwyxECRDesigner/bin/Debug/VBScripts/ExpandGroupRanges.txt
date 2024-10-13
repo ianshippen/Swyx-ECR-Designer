@@ -1,0 +1,138 @@
+Function ExpandGroupRanges(ByRef p_target)
+  Dim myIndex, startIndex, result, x, looking
+
+  If debugFlag Then LogError "ExpandGroupRanges(" & WrapInQuotes(p_target) & ") called"
+
+  startIndex = 1
+  x = p_target
+  looking = True
+
+  While looking
+    myIndex = InStr(x, "~")
+
+    If myIndex > 0 Then
+      ' Calculate left and right cutting points
+      Dim leftIndex, rightIndex, parsing, startNumber, endNumber, base, i
+
+
+      leftIndex = myIndex - 1
+      parsing = True
+
+      While parsing
+        If leftIndex < 1 Then
+          ' Hit start of x
+          parsing = False
+        Else
+          If Mid(x, leftIndex, 1) = "^" Then
+            ' Hit a "^" symbol
+            parsing = False
+          Else
+            leftIndex = leftIndex - 1
+          End If
+        End If
+      Wend
+
+      rightIndex = myIndex + 1
+      parsing = True
+
+      While parsing
+        If rightIndex > Len(x) Then
+          ' Hit end of x
+          parsing = False
+        Else
+          If Mid(x, rightIndex, 1) = "^" Then
+            ' Hit a "^" symbol
+            parsing = False
+          Else
+            rightIndex = rightIndex + 1
+          End If
+        End If
+      Wend
+
+      ' The starting team number is before us delimited by a non numeric character
+      startNumber = ""
+      startIndex = myIndex - 1
+      parsing = True
+
+      ' Look for end of digit string
+      While parsing
+        If IsDigit(Mid(x, startIndex, 1)) Then
+          parsing = False
+        Else
+         startIndex = startIndex - 1
+        End If
+      Wend
+
+      ' Look for beginning of digit string
+      parsing = True
+
+      While parsing
+        If IsDigit(Mid(x, startIndex, 1)) Then
+          startNumber = Mid(x, startIndex, 1) & startNumber
+          startIndex = startIndex - 1
+        Else
+          parsing = False
+        End If
+      Wend
+
+      base = Trim(Mid(x, leftIndex + 1, startIndex - leftIndex)) 
+
+      ' The ending team number starts after us and may have space(s) in front of it. Delimited by either end of string, or non numeric character
+      endNumber = ""
+      startIndex = myIndex + 1
+      parsing = True
+
+      ' Look for start of digit string
+      While parsing
+        ' Have we reached the end of the string ?
+        If startIndex > Len(x) Then
+          ' Reached the end of the string
+          parsing = False
+        Else
+          If IsDigit(Mid(x, startIndex, 1)) Then
+             parsing = False
+          Else
+            startIndex = startIndex + 1
+          End If
+        End If
+      Wend
+
+      parsing = True
+
+      While parsing
+        ' Have we reached the end of the string ?
+        If startIndex > Len(x) Then
+          ' Reached the end of the string
+          parsing = False
+        Else
+          If IsDigit(Mid(x, startIndex, 1)) Then
+            endNumber = endNumber & Mid(x, startIndex, 1)
+            startIndex = startIndex + 1
+          Else
+            parsing = False
+          End If
+        End If
+      Wend
+
+      endNumber = Trim(endNumber)
+      result = ""
+
+      For i = CInt(startNumber) To CInt(endNumber)
+        If i > Cint(startNumber) Then result = result & "^"
+          result = result & base & " " & i
+      Next
+
+      ' Splice into our string
+      If leftIndex > 0 Then result = Left(x, leftIndex) & result
+      If rightIndex <= Len(x) Then result = result & Mid(x, rightIndex)
+      x = result
+    Else
+      looking = False
+    End If    
+  Wend
+
+  ExpandGroupRanges = x
+
+  If debugFlag Then LogError "ExpandGroupRanges(" & WrapInQuotes(p_target) & ") expanding to " & WrapInQuotes(x)
+End Function
+

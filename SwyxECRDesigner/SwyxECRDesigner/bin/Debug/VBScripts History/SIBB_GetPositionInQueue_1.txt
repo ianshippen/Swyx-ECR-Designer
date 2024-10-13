@@ -1,0 +1,27 @@
+' This version stores the position in queue indexed from zero into the "storeInVariable".
+' Also, it does not have a separate output if the queue is left - when GetPositionInQueue returns -1
+' The new version indexes the position from 1 and also has an output (myUseExit = 1) if we have left the queue.
+
+Function SIBB_GetPositionInQueue(ByRef p_data)
+	If debugFlag Then LogError "ServiceBuilder::SIBB_GetPositionInQueue(" & WrapInQuotes(p_data) & ")"
+
+	Dim myUseExit, myArray, myCallId, myMaxLength, myQTimeout, storeInVariable
+
+	myUseExit = -1
+	myArray = Split(p_data, ",")
+
+	If UBound(myArray) = 3 Then
+		myCallId = myArray(0)
+		myMaxLength = myArray(1)
+		myQTimeout = myArray(2)
+		storeInVariable = myArray(3)
+		myUseExit = 0
+		SetVar storeInVariable, GetPositionInQueue(myCallId, myQTimeout, myMaxLength)
+	Else
+		LogError "ServiceBuilder::SIBB_GetPositionInQueue(" & WrapInQuotes(p_data) & ") Error: Wrong number of parameters"
+	End If
+
+	If debugFlag Then LogError "ServiceBuilder::SIBB_GetPositionInQueue returns " & myUseExit
+
+	SIBB_GetPositionInQueue = myUseExit
+End Function

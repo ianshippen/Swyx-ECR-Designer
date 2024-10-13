@@ -1,0 +1,3 @@
+Sub LogError(ByRef p_error)
+  PBXScript.OutputTrace "ReachAll ECR Designer: " & p_error
+End Sub

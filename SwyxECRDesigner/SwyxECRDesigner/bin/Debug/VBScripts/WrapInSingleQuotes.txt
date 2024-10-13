@@ -1,0 +1,3 @@
+Function WrapInSingleQuotes(ByRef p)
+	WrapInSingleQuotes = "'" & p & "'"
+End Function

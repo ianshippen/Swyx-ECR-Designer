@@ -1,0 +1,49 @@
+Function SIBB_Connect(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Connect(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myRCDummy, dest, timeout, alertSound, useAlertSound, myArray
+
+  myUseExit = -1
+  alertSound = ""
+  useAlertSound = False
+  myArray = Split(p_data, ",")  
+
+  If UBound(myArray) >= 1 Then
+    dest = myArray(0)
+    timeout = CInt(myArray(1))
+ 
+    If UBound(myArray) = 2 Then
+      If myArray(2) <> "" Then
+        alertSound = myArray(2)
+        useAlertSound = True
+      End If
+    End If
+
+    If debugFlag Then LogError "ServiceBuilder::Connecting to " & WrapInQuotes(dest) & " for " & timeout & " seconds"
+
+    myUseExit = gseConnectToEx6(dest, timeout, "", False, myRCDummy, True, useAlertSound, alertSound, False, "", False)
+   
+    Select Case myUseExit
+      Case gseStateConnected
+        myUseExit = 0
+
+      Case gseStateTimeout
+        myUseExit = 1
+
+      Case gseStateNoAnswer
+        myUseExit = 2
+
+      Case gseStateNotDelivered
+        myUseExit = 3
+
+      Case gseStateDisconnected
+        myUseExit = 4
+    End Select
+  Else
+    LogError "ServiceBuilder::SIBB_Connect() - invalid data"
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Connect() returning " & myUseExit
+
+  SIBB_Connect = myUseExit
+End Function

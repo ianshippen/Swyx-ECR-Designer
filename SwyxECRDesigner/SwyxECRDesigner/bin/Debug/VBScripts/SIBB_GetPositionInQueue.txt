@@ -1,0 +1,33 @@
+Function SIBB_GetPositionInQueue(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GetPositionInQueue(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray, myCallId, myMaxLength, myQTimeout, storeInVariable, myPosition
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")
+
+  If UBound(myArray) = 3 Then
+    myCallId = myArray(0)
+    myMaxLength = myArray(1)
+    myQTimeout = myArray(2)
+    storeInVariable = myArray(3)
+
+    SetVar storeInVariable, 
+    myPosition = GetPositionInQueue(myCallId, myQTimeout, myMaxLength)
+
+    If myPosition >= 0 Then
+      ' Returned value is indexed from zero, so need to add 1 to get real position
+      SetVar storeInVariable, myPosition + 1
+      myUseExit = 0
+    Else
+      ' We have left the queue
+      myUseExit = 1
+    End If
+  Else
+    LogError "ServiceBuilder::SIBB_GetPositionInQueue(" & WrapInQuotes(p_data) & ") Error: Wrong number of parameters"   
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GetPositionInQueue returns " & myUseExit
+
+  SIBB_GetPositionInQueue = myUseExit
+End Function

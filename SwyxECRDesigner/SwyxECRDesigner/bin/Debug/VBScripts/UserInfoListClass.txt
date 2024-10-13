@@ -1,0 +1,64 @@
+Class UserInfoClass
+  Public UserId, Name, State
+End Class
+
+Class UserInfoListClass
+  private myCollection
+  private myDebugFlag
+
+  Private sub Class_Initialize
+    Set myCollection = CreateObject("System.Collections.ArrayList")
+    myDebugFlag = False
+    'Set Class_Initialize = Me
+  End sub
+
+  Private Sub Class_Terminate
+    Set myCollection = Nothing
+  End Sub
+
+  Public Sub Add(p_name, p_state, p_userId)
+    Dim i, alreadyAdded
+
+    alreadyAdded = False
+
+    If myDebugFlag Then LogError "UserInfoListClass::Add(" & WrapInQuotes(p_name) & ", " & p_state & ", " & p_userId & ")"
+ 
+    For i = 0 to myCollection.Count - 1
+      If myCollection.Item(i).Name = p_name Then
+        alreadyAdded = True
+        Exit For
+      End If
+    Next
+
+    If Not alreadyAdded Then
+      Dim x
+
+      Set x = new UserInfoClass
+      x.Name = p_name
+      x.userId = p_userId
+      x.State = p_state
+      myCollection.Add x
+    End If
+  End Sub
+
+  Public Function GetCount()
+    GetCount = myCollection.Count
+  End Function
+
+  Public Function GetName(p_index)
+    GetName = myCollection.Item(p_index).Name
+  End Function
+
+  Public Function GetState(p_index)
+    GetState = myCollection.Item(p_index).State
+  End Function
+
+  Public Function GetUserId(p_index)
+    GetUserId = myCollection.Item(p_index).userId
+  End Function
+
+  Public Sub Debug(p_debugFlag)
+    myDebugFlag = p_debugFlag
+  End Sub
+End Class
+

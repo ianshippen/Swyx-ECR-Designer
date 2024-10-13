@@ -1,0 +1,59 @@
+Sub AddCallToQueue(ByVal p_callId, ByVal p_queueId, ByRef p_tag)
+	If p_callId = 0 Then p_callId = CallId()
+
+	DBExecute "EXEC SP_ADD_CALL_TO_QUEUE " & p_callId & ", " & p_queueId & ", " & WrapinSingleQuotes(p_tag)
+End Sub
+
+Sub RemoveCallFromQueue(ByVal p_callId)
+	If p_callId = 0 Then p_callId = CallId()
+
+	ChangeQueueState p_callId, "NotInQueue"
+End Sub
+
+Sub ChangeQueueState(ByVal p_callId, ByRef p_state)
+	If p_callId = 0 Then p_callId = CallId()
+
+	DBExecute "EXEC SP_CHANGE_QUEUE_STATE " & p_callId & ", " & WrapInSingleQuotes(p_state)
+End Sub
+
+Function GetPositionInQueue(ByVal p_callId, ByVal p_timeout, ByVal p_maxQLength)
+        Dim myPos
+
+	If p_callId = 0 Then p_callId = CallId()
+
+	myPos = QInt(DBReadScalar("EXEC SP_GET_POSITION_IN_QUEUE_EX " & p_callId & ", " & p_timeout, "position"))
+
+        If myPos = -2 Then myPos = 1000
+
+        If p_maxQLength > 0 Then
+          If myPos > p_maxQLength Then myPos = -1
+	End If
+
+        GetPositionInQueue = myPos
+End Function
+
+Function QInt(ByRef p)
+  Dim result : result = -2
+
+  If Not IsNUll(p) Then
+    If p <> "" Then result = CInt(p)
+  End If
+
+  QInt = result
+End Function
+
+Sub IncRings(ByVal p_callId)
+	If p_callId = 0 Then p_callId = CallId()
+        
+  	DBExecute "UPDATE CallQueueTable SET rings = rings + 1 WHERE CallId=" & p_callId
+End Sub
+
+Function GetQueueLength(p_queueId)
+	Dim myLength : myLength = -1
+
+        myLength = QInt(DBReadScalar("EXEC SP_GET_QUEUE_LENGTH " & p_queueId, "length"))
+
+        If myLength = -2 Then myLength = -1
+
+	GetQueueLength = myLength
+End Function

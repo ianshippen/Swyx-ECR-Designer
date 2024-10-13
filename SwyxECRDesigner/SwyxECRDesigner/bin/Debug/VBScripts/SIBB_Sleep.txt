@@ -1,0 +1,11 @@
+Function SIBB_Sleep(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Sleep(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit : myUseExit = 0
+
+  If Sleep(CInt(p_data)) = False Then myUseExit = 1
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Sleep returns " & myUseExit
+
+  SIBB_Sleep = myUseExit
+End Function

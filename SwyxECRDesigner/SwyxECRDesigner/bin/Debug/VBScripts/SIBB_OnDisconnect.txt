@@ -1,0 +1,7 @@
+Function SIBB_OnDisconnect(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_OnDisconnect() called"
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_OnDisconnect() exiting with 0"
+
+  SIBB_OnDisconnect = 0
+End Function

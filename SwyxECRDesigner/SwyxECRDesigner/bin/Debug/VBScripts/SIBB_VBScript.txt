@@ -1,0 +1,13 @@
+Function SIBB_VBScript(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_VBScript() called"
+
+  myUseExit = 0
+  
+  If p_data <> "" Then
+    ExecuteGlobal(p_data)
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_VBScript() exiting with " & myUseExit
+
+  SIBB_VBScript = myUseExit
+End Function

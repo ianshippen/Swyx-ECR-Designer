@@ -1,0 +1,86 @@
+Function GetUserByAddressWrapper(ByRef p_target, ByRef p_info)
+	Dim x
+	Dim result : result = False
+
+	On Error Resume Next
+
+	Set p_info = Nothing
+
+	If debugFlag Then LogError "GetUserByAddressWrapper(" & WrapInQuotes(p_target) & ") called"
+
+	Set x = PBXScript.CreateObject("IpPbxSrv.PBXConfig")
+
+	If Err = 0 Then
+    		x.Initialize PBXUser
+
+		If Err = 0 Then
+      			Set p_info = x.GetUserByAddress(p_target)
+
+			If Err = 0 Then
+				result = True
+
+        			If debugFlag Then
+          				Dim myUser
+
+          				For Each myUser In p_info
+            					LogError "GetUserByAddressWrapper: GetUserByAddress() returned Name = " & WrapInQuotes(myUser.Name) & ", State = " & myUser.State
+          				Next
+        			End If
+			Else
+				LogError "GetUserByAddressWrapper(" & WrapInQuotes(p_target) & ") could not Get User By Address"
+				LogError "GetUserByAddressWrapper: " & Err.Source
+				LogError "GetUserByAddressWrapper: " & Err.Description
+
+				' Flip the case of one or more letters in the target string
+				dim y : y = ""
+
+				Randomize
+
+				For i = 1 To Len(p_target)
+					Dim a : a = Asc(Mid(p_target, i, 1))
+
+					If (a >= 65 And a <= 90) Or (a >= 97 And a <= 122) Then
+						If rnd >= 0.5 Then
+							If a <= 90 Then
+								a = a + 32
+							Else
+								a = a - 32
+							End If
+	
+							y = y & Chr(a)
+						Else
+							y = y & Mid(p_target, i, 1)
+						End If
+					Else
+						y = y & Mid(p_target, i, 1)
+					End If 
+				Next
+
+				' Try again
+				Err.Clear
+				Set p_info = Nothing
+				Set p_info = x.GetUserByAddress(y)
+
+				If Err = 0 Then
+					result = True
+				Else
+					LogError "GetUserByAddressWrapper(" & WrapInQuotes(p_target) & ") could not Get User By Address on retry"
+					LogError "GetUserByAddressWrapper: " & Err.Source
+					LogError "GetUserByAddressWrapper: " & Err.Description
+				End If
+			End If
+    		Else
+			LogError "GetUserByAddressWrapper(" & WrapInQuotes(p_target) & ") could not Initialize PBXUser"
+			LogError "GetUserByAddressWrapper: " & Err.Source
+			LogError "GetUserByAddressWrapper: " & Err.Description
+		End If
+
+		Set x = Nothing
+	Else
+    		LogError "GetUserByAddressWrapper(" & WrapInQuotes(p_target) & ") could not create PBXConfig object"
+    		LogError "GetUserByAddressWrapper: " & Err.Source
+    		LogError "GetUserByAddressWrapper: " & Err.Description
+	End If
+
+	GetUserByAddressWrapper = result
+End Function

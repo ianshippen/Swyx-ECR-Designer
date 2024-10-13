@@ -1,0 +1,71 @@
+Function SIBB_GetDTMFString(p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GetDTMFString(" & WrapInQuotes(p_data) & ") called"
+
+  Dim myUseExit, myArray
+
+  myUseExit = -1
+  myArray = Split(p_data, ",") 
+
+  If UBound(myArray) >= 7 Then
+    Dim playAnnouncement : playAnnouncement = CBool(myArray(0))
+    Dim sound : sound = myArray(1)
+    Dim variableName : variableName = myArray(2)
+    Dim resetContent : resetContent = Not CBool(myArray(3))
+    Dim maxLength : maxLength = myArray(5)
+    Dim delimiter : delimiter = myArray(6)
+    Dim timeout : timeout = myArray(7)
+    Dim stopChar, stopOnChar, stopOnLength
+    Dim myLocal
+
+    If delimiter = "" Then
+      stopChar = "#"
+      stopOnChar = False
+    Else
+      stopChar = delimiter
+      stopOnChar = True
+    End If
+    
+    If maxLength >= 0 Then
+      stopOnLength = True
+    Else
+      stopOnLength = False
+      maxLength = 0
+    End If
+
+    myUseExit = gseGetDTMFStringEx2(myLocal, resetContent, sound, stopOnChar, stopOnLength, stopChar, maxLength, timeout)
+
+    If variableName <> "" Then
+      If Left(variableName, 1) = Chr(34) Then variableName = Right(variableName, Len(variableName) - 1)
+      If Right(variableName, 1) = Chr(34) Then variableName = Left(variableName, Len(variableName) - 1)
+
+      If variablesDictionary.Exists(variableName) Then
+        variablesDictionary.Item(variableName) = myLocal
+      Else
+        variablesDictionary.Add variableName, myLocal
+      End If
+    End If
+    
+    Select Case myUseExit
+      Case gseStateDTMFStringCollected
+        myUseExit = 0
+      
+      Case gseStateTimeout
+        myUseExit = 1
+    
+      Case gseStateOnlyStopChar
+        myUseExit = 2
+
+      Case gseStateDisconnected
+        myUseExit = 3
+
+      Case Else
+        myUseExit = -1
+    End Select
+  Else
+    LogError "ServiceBuilder::SIBB_GetDTMFString(" & WrapInQuotes(p_data) & " - invalid data"
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GetDTMFString() returning " & myUseExit
+
+  SIBB_GetDTMFString = myUseExit
+End Function

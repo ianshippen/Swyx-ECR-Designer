@@ -1,0 +1,6 @@
+abandonedCallDelta = 1
+missedCallDelta = 0
+ringStartTime = Timer
+myTemp = DeltaStatsField(databaseName, tableName, queueName, "totalCalls ", 1)
+myTemp = DeltaStatsField(databaseName, tableName, queueName, "callsWaiting", 1)
+SetValueForCallId "OpenQueue", "DeliveredTimeTable", CallID(), "deliveredTime", ConvertDateToISO(Now)

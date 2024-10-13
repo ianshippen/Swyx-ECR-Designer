@@ -1,0 +1,2 @@
+Dim missedCallDelta ; missedCallDelta = 0
+Dim abandonedCallDelta ; abandonedCallDelta = 0

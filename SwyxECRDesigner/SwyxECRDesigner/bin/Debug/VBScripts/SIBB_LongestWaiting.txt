@@ -1,0 +1,47 @@
+Function SIBB_LongestWaiting(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_LongestWaiting(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray, alertSound
+
+  myUseExit = -1
+  alertSound = ""
+  myArray = Split(p_data, ",")  
+
+  If UBound(myArray) >= 3 Then
+    Dim target : target = myArray(0)
+    Dim agentTimeout : agentTimeout = myArray(1)
+    Dim groupTimeout : groupTimeout = myArray(2)
+    Dim rule : rule = myArray(3)
+
+    If UBound(myArray) = 4 Then alertSound = myArray(4)
+
+    If Len(rule) > 1 Then
+      If Left(rule, 1) = "$" Then
+        rule = variablesDictionary.Item(rule)
+      End If
+    End If
+
+    myUseExit = LongestWaitingAgentDistributor(target, agentTimeout, groupTimeout, rule, alertSound)
+
+    Select Case myUseExit
+      Case 0
+        myUseExit = 0
+
+      Case 1
+        myUseExit = 1
+
+      Case 2
+        myUseExit = 2
+
+      Case 3
+        myUseExit = 3
+ 
+      Case 9
+        myUseExit = 4
+    End Select
+  Else
+    LogError "ServiceBuilder::SIBB_LongestWaiting(" & WrapInQuotes(p_data) & " - invalid data"
+  End If
+
+  SIBB_LongestWaiting = myUseExit
+End Function

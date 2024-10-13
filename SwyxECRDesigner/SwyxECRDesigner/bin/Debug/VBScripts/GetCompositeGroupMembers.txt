@@ -1,0 +1,38 @@
+Sub GetCompositeGroupMembers(ByVal p_target, ByRef p_userInfoList)
+  Dim parsing, startIndex, myIndex
+
+  If debugFlag Then LogError "GetCompositeGroupMembers(" & WrapInQuotes(p_target) & ") called"
+
+  parsing = True
+  startIndex = 1
+
+  p_target = ExpandGroupRanges(p_target)
+
+  While parsing
+    Dim myName, myInfo, myUser
+    
+    myIndex = InStr(Mid(p_target, startIndex), "^")
+
+    If myIndex = 0 Then
+      parsing = False
+      myIndex = Len(p_target) + 1
+    Else
+      ' Compensate for using Mid()
+      myIndex = myIndex + (startIndex - 1)
+    End If
+
+    myName = Mid(p_target, startIndex, (myIndex - startIndex))
+
+    ' Get info for this group name
+    GetGroupMembers myName, myInfo
+
+    If Not myInfo Is Nothing Then
+      For Each myUser In myInfo
+        p_userInfoList.Add myUser.Name, myUser.State, myUser.userId
+      Next
+    End If
+
+    startIndex = myIndex + 1
+  Wend
+End Sub
+

@@ -1,0 +1,12 @@
+Function Hold(ByRef p_data)
+  ' Returns True is everything is OK
+  ' Returns False if disconnected, or error
+  Dim myData : myData = p_data
+  Dim result : result = True
+
+  If myData = "" Then myData = "*hold*"
+
+  If gseHoldEx(myData) <> gseStateOnHold Then result = False
+
+  Hold = result
+End Function

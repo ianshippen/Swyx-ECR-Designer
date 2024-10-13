@@ -1,0 +1,16 @@
+Function SIBB_FirstTime(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_FirstTime(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myKey
+
+  myUseExit = 0
+  myKey = "firstTime_Node_" & p_data & "_key"
+
+  If IsVarTrue(myKey) Then
+    myUseExit = 1
+  Else
+    SetVar(myKey, "True")
+  End If
+
+  SIBB_FirstTime = myUseExit
+End Function

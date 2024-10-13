@@ -1,0 +1,3 @@
+Sub UpdateDeliveredTimeTable(byref p_callId)
+	DBExecute "EXEC SP_UPDATE_DELIVERED_TIME_TABLE " & p_callId
+End Sub

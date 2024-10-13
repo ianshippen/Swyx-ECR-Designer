@@ -1,0 +1,10 @@
+Function SIBB_GetCurrentTime(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GetCurrentTime(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit
+
+  myUseExit = 0
+  SetVar "$" & p_data, Now()
+
+  SIBB_GetCurrentTime = myUseExit
+End Function

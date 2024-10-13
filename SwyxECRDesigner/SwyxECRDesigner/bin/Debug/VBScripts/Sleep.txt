@@ -1,0 +1,11 @@
+Function Sleep(ByVal p_intData)
+  ' Returns True if everything OK
+  ' Returns False if call has disconnected
+  Dim result : result = True
+
+  PBXScript.Sleep p_intData
+ 
+  If PBXCall.IsOriginatorDisconnected Then result = False
+
+  Sleep = result
+End Function

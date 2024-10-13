@@ -1,0 +1,25 @@
+Function SIBB_Pause(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_Pause(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")  
+
+  If UBound(myArray) = 3 Then
+    Dim target : target = myArray(0)
+    Dim shortTimer : shortTimer = CInt(myArray(1))
+    Dim longTimer : longTimer = CInt(myArray(2))
+    Dim rule : rule = RemoveBrackets(myArray(3))
+
+    myUseExit = 0
+
+    myUseExit = Pause(target, shortTimer, longTimer, rule)
+
+    If myUseExit = 9 Then myUseExit = 2
+  Else
+    LogError "ServiceBuilder::SIBB_Pause() Error: Wrong number of parms in data - expecting 4, got " & UBound(myArray) + 1
+  End If
+
+  SIBB_Pause = myUseExit
+End Function

@@ -1,0 +1,45 @@
+Function DBReturnResults(ByRef p_statement, ByRef p_rs, ByRef p_db)
+  Dim rc, foundError
+
+  rc = False
+  foundError = False
+  
+  On Error Resume Next
+
+  If p_db Is Nothing Then
+    Set p_db = CreateObject("ADODB.Connection")
+
+    If Err <> 0 Then
+      LogError "Error in DBReturnResults::CreateObject(" & WrapInQuotes("ADODB.Connection") &")"
+      LogError "Error code = " & CStr(Hex(Err))
+      LogError "Error description = " & Err.Description
+      foundError = True
+    End If
+
+    If foundError = False Then
+      p_db.Open GenerateDatabaseConnectionString()
+
+      If Err <> 0 Then
+        LogError "Error in DBReturnResults::Open(" & WrapInQuotes(GenerateDatabaseConnectionString()) &")"
+        LogError "Error code = " & CStr(Hex(Err))
+        LogError "Error description = " & Err.Description
+        foundError = True
+      End  If
+    End If
+  End If
+
+  If foundError = False Then
+    Set p_rs = p_db.Execute(p_Statement)
+  
+    If Err = 0 Then
+      rc = True
+    Else
+      LogError "Error in DBReturnResults::db.Execute(" & WrapInQuotes(p_Statement) & ")"
+      LogError "Error code = " & CStr(Hex(Err))
+      LogError "Error description = " & Err.Description
+      foundError = True
+    End If
+  End If
+
+  DBReturnResults = rc
+End Function

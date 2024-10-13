@@ -1,0 +1,308 @@
+' ***************************************************************************
+' Parameters:
+' p_target - Name of Group to deliver call to
+' p_agentTimeout in seconds
+' p_groupTimeout in seconds
+' Return Codes:
+' 0 - Connected
+' 1 - Group Timeout
+' 2 - Busy
+' 3 - Not Delivered
+' 9 - Disconnected
+
+Function LeastUsedAgentDistributor(ByRef p_target, ByRef p_agentTimeout, ByRef p_groupTimeout, ByVal p_rule, ByRef p_alertSound)
+  Dim i, startTime, myUserInfoList, useExit, returnCode, groupTimeOutAsInt, lastTarget, ruleArray,  j, useAlertSound, myInfo, myUser
+
+' *** Point A ***
+  returnCode = 0
+  useExit = 0
+  groupTimeoutAsInt = CInt(p_groupTimeout)
+  startTime = Now
+  lastTarget = ""
+  useAlertSound = False
+
+  If p_alertSound <> "" Then useAlertSound = True
+
+  If debugFlag Then LogError "LeastUsedAgentDistributor(" & WrapInQuotes(p_target) & ", " & p_agentTimeout & ", " & p_groupTimeout & ", " & WrapInQuotes(p_rule) & ") called"
+
+  Set myUserInfoList = New UserInfoListClass
+  myUserInfoList.Debug(debugFlag)
+
+' *** Point B ***
+  ' Get group members
+  GetGroupMembers p_target, myInfo
+
+  If Not myInfo Is Nothing Then
+    For Each myUser In myInfo
+      myUserInfoList.Add myUser.Name, myUser.State, myUser.userId
+    Next
+  End If
+
+  If debugFlag Then
+    LogError "LeastUsedAgentDistributor: GetGroupMembers(" & WrapInQuotes(p_target) & ") called"
+    LogError "LeastUsedAgentDistributor: GetGroupMembers() returned " & myUserInfoList.GetCount() & " members"
+    
+    For i = 0 To myUserInfoList.GetCount() - 1
+      LogError "LeastUsedAgentDistributor : myUserInfoList.GetName(" & i & ") = " & WrapInQuotes(myUserInfoList.GetName(i)) & " .GetState(" & i & ") = " & myUserInfoList.GetState(i)
+    Next
+  End If
+
+' *** Point C ***
+  ' Check if any member is classed as logged in according to the rule. If none are logged in then return with Code 3 (Not Delivered)
+  If p_rule <> "" Then
+    If InStr(p_rule, ",") > 0 Then
+      ruleArray = Split(p_rule, ",")
+    Else
+      ruleArray = Split(p_rule, ";")
+    End If
+  Else
+    ReDim ruleArray(0)
+
+    ruleArray(0) = CInt(STATUS_AVAILABLE)
+  End If
+  
+  For i = 0 To myUserInfoList.GetCount() - 1
+    Dim myState : myState = myUserInfoList.GetState(i)
+
+    For j = 0 To UBound(ruleArray)
+      If CInt(ruleArray(j)) = myState Then
+        useExit = 1 ' Block C exit
+
+        If debugFlag Then LogError "LeastUsedAgentDistributor : " & WrapInQuotes(myUserInfoList.GetName(i)) & " is logged in according to the rule " & WrapInQuotes(p_rule)
+
+        Exit For
+      End If
+    Next
+
+    If useExit = 1 Then Exit For
+  Next
+
+  If useExit = 1 Then
+' *** Point E ***
+    Dim gettingAgents
+
+    gettingAgents = True
+
+    While gettingAgents
+      ' Generate a list of available agents
+      Dim myList, myName, myArray, myIndex
+
+      gettingAgents = False
+      useExit = 0
+
+      myList = ""
+      myName = ""
+      myArray = Array
+      myIndex = -1
+
+      myList = LUAD_GenerateList(myUserInfoList)
+
+      If Len(myList) = 0 Then
+        If Len(lastTarget) > 0 Then
+          For i = 0 To myUserInfoList.GetCount()
+            If myUserInfoList.GetName(i) = lastTarget Then
+              If myUserInfoList.GetState(i) = 4 Then
+	        PBXScript.Sleep 1000
+  	        myList = LUAD_GenerateList(myUserInfoList)
+              End If
+            End If
+          Next
+        End If
+      End If
+
+      If Len(myList) = 0 Then
+        ' No agents available
+        UseExit = 1 ' Block E exit
+      Else
+        DBReadTableIntoArray "EXEC sp_check_agents " & WrapInSingleQuotes(myList), "name", myArray
+
+        If UBound(myArray) = -1 Then
+          ' Nothing returned. Database error ?
+	  ' Convert the original list into an array
+	  Dim tempArray, numberOfAgents
+
+	  tempArray = Array
+
+	  While InStr(myList, ",") > 0
+	    ReDim Preserve tempArray(UBound(tempArray) + 1)
+	    tempArray(UBound(tempArray)) = Left(myList, InStr(myList, ",") - 1)
+	    myList = Right(myList, Len(myList) - InStr(myList, ","))
+	  WEnd
+			
+	  ReDim Preserve tempArray(UBound(tempArray) + 1)
+	  tempArray(UBound(tempArray)) = myList
+
+          Randomize
+		
+          numberOfAgents = UBound(tempArray) + 1
+
+	  For i = 0 To numberOfAgents - 1
+	    myIndex = Int(Rnd * (UBound(tempArray) + 1))
+	    ReDim Preserve myArray(UBound(myArray) + 1)
+	    myArray(UBound(myArray)) = tempArray(myIndex)
+
+	    For j = (myIndex + 1) To UBound(tempArray)
+	      tempArray(j - 1) = tempArray(j)
+	    Next
+
+	    ReDim Preserve tempArray(UBound(tempArray) - 1) 
+	  Next
+        End If
+
+        myIndex = -1
+      End If
+    
+      If useExit = 0 Then
+' *** Point F ***
+        Dim tryingAgent
+
+        tryingAgent = True
+      	
+        While tryingAgent
+          Dim rcDummy
+
+	  useExit = 0
+          tryingAgent = False
+
+          ' Try agent
+          If DateDiff("s", startTime, Now) > groupTimeoutAsInt Then
+	    UseExit = 2
+          Else
+	    myIndex = myIndex + 1
+
+	    If myIndex <= UBound(myArray) Then
+	      myName = myArray(myIndex)
+	      lastTarget = myName
+	      ' PBXScript.OutputTrace("Trying agent " & myName)
+	    Else
+	      UseExit = 1
+	    End If
+          End If
+
+          Select Case useExit
+            Case 0
+              ' Proceed. Try to connect to agent
+' *** Point G ***
+              LogTraceDB "LeastUsedAgentDistributor()", 0, "Trying to connect to " & myName
+              useExit = gseConnectToEx6(myName, p_agentTimeout, "", False, rcDummy, True, useAlertSound, p_alertSound, False, "", False)
+
+              Select Case useExit
+                Case gseStateConnected
+	          useExit = 0
+
+	        Case gseStateTimeout
+	          useExit = 1
+
+	        Case gseStateNoAnswer
+	          useExit = 1
+
+	        Case gseStateNotDelivered
+	          useExit = 1
+
+                Case gseStateDisconnected
+                  useExit = 2
+              End Select
+
+              If useExit = 0 Then
+                LogTraceDB "LeastUsedAgentDistributor()", 0, "Connect returned " & useExit & " " & myName
+              Else
+                LogTraceDB "LeastUsedAgentDistributor()", 0, "Connect returned " & useExit & " " & myName
+              End If
+
+              Select Case useExit
+	        Case 0
+                 ' Connected, return Connected
+                 returnCode = 0
+
+                Case 1
+                  ' Try agent again
+                  tryingAgent = True
+  
+                Case 2
+                   ' Disconnected
+                   returnCode = 9
+	      End Select
+        
+	    Case 1
+              ' Loop finished, check for group timeout
+' *** Point H ***
+              If DateDiff("s", startTime, Now) > groupTimeoutAsInt Then
+                ' Return Group Timeout
+                returnCode = 1
+              Else
+	        PBXScript.Sleep 1000
+                gettingAgents = True
+              End If
+
+            Case 2
+' *** Point J ***
+              ' Return Group Timeout
+	      returnCode = 1
+
+          End Select
+        Wend ' While tryingAgent
+      Else
+' *** Point I ***
+        ' Return Busy
+        returnCode = 2
+      End If 
+    Wend ' While gettingAgents
+  Else
+' *** Point D ***
+    ' Return Not Delivered. useExit = 0
+      returnCode = 3
+  End If
+
+  LeastUsedAgentDistributor = returnCode
+End Function
+
+
+' ***************************************************************************
+Function LUAD_GenerateList(ByRef p_userInfoList)
+  Dim i, myList
+
+  myList = ""
+
+  For i = 0 To p_userInfoList.GetCount() - 1
+    If p_userInfoList.GetState(i) = 2 Then
+      If Len(myList) > 0 Then myList = myList & ","
+
+      myList = myList & SingleQuoteCheck(p_userInfoList.GetName(i))
+    End If
+  Next
+  
+  LUAD_GenerateList = myList
+End Function
+
+
+' ***************************************************************************
+Sub DBReadTableIntoArray(ByRef p_statement, ByRef p_fieldName, ByRef p_array)
+  Dim db, rs, myCount
+
+  On Error Resume Next
+  myCount = 0
+  Set db = CreateObject("ADODB.Connection")
+ 
+  If Err = 0 Then
+     db.Open GenerateDatabaseConnectionString()
+    
+    If Err = 0 Then
+      Set rs = db.Execute(p_statement)
+
+      If Err = 0 Then
+        If Not rs.EOF Then
+          While Not rs.EOF
+            ReDim Preserve p_array(myCount)
+            p_array(myCount) = rs(p_fieldName)
+            myCount = myCount + 1
+            rs.MoveNext
+          Wend
+        End If
+      End If
+    End If
+
+    db.Close
+  End If
+
+  Set db = Nothing
+End Sub

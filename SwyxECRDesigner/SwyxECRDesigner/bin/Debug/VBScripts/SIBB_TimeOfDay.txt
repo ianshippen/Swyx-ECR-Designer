@@ -1,0 +1,50 @@
+Function SIBB_TimeOfDay(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_TimeOfDay(" & WrapInQuotes(p_data) & ")"
+
+  Dim seconds, myArray, myUseExit
+
+  myUseExit = -1
+  seconds = Timer
+  myArray = Split(p_data, ",")
+
+  If variablesDictionary.Exists("$testDateTime") Then
+    Dim z : z = variablesDictionary.Item("$testDateTime")
+
+    If Len(z) > 0 Then seconds = (3600 * DatePart("h", CDate(z))) + (60 * DatePart("n", CDate(z))) + DatePart("s", CDate(z))
+  End If
+
+  If UBound(myArray) = 1 Then
+    Dim startSecond, endSecond
+    Dim doCheck : doCheck = True
+
+    myUseExit = 1
+
+    If myArray(0) = "" Then
+        If myArray(1) = "" Then
+          doCheck = False
+        Else
+            startSecond = 0
+            endSecond = (3600 * CInt(Left(myArray(1), 2))) + (60 * CInt(Mid(myArray(1), 4, 2))) + CInt(Mid(myArray(1), 7))
+        End If
+    Else
+        startSecond = (3600 * CInt(Left(myArray(0), 2))) + (60 * CInt(Mid(myArray(0), 4, 2))) + CInt(Mid(myArray(0), 7))
+    
+        If myArray(1) = "" Then
+            endSecond = 86399
+        Else
+            endSecond = (3600 * CInt(Left(myArray(1), 2))) + (60 * CInt(Mid(myArray(1), 4, 2))) + CInt(Mid(myArray(1), 7))
+        End If
+    End If
+
+    If doCheck Then
+        If seconds >= startSecond And seconds <= endSecond Then myUseExit = 0
+    End If
+  Else
+    LogError "ServiceBuilder::SIBB_TimeOfDay(" & WrapInQuotes(p_data) & " - invalid data"
+  End If 
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_TimeOfDay() returning " & myUseExit
+
+  SIBB_TimeOfDay = myUseExit
+End Function
+

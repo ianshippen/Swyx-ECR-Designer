@@ -1,0 +1,40 @@
+Class CallMachineClass
+  Public state, onCallStart, onInHours, onOutOfHours, onCallDelivered, onCallConnect, onCallDisconnect, onVMDone
+  private m_debug, m_callId, m_myKey, m_timeStamp
+
+  Private Sub Class_Initialize
+    m_debug = False
+    m_callId = 0
+    m_myKey = ""
+    state = 0
+    Set onCallStart = (New CallMachineTargetClass)("CallStart")
+    Set onInHours = (New CallMachineTargetClass)("InHours")
+    Set onOutOfHours = (New CallMachineTargetClass)("OutOfHours")
+    Set onCallDelivered = (New CallMachineTargetClass)("CallDelivered")
+    Set onCallConnect = (New CallMachineTargetClass)("CallConnect")
+    Set onCallDisconnect = (New CallMachineTargetClass)("CallDisconnect")
+    Set onVMDone = (New CallMachineTargetClass)("VMDone")
+  End Sub
+
+  Public Sub SetDebug(p)
+    m_debug = p
+    onCallStart.SetDebug(p)
+    onInHours.SetDebug(p)
+    onOutOfHours.SetDebug(p)
+    onCallDelivered.SetDebug(p)
+    onCallConnect.SetDebug(p)
+    onCallDisconnect.SetDebug(p)
+    onVMDone.SetDebug(p)
+  End Sub
+
+  Public Sub BindCallInfo(p_callId, p_myKey)
+    m_timeStamp = Now
+    m_callId = p_callId
+    m_myKey = p_myKey
+  End Sub
+
+  Public Sub WriteToEventTable(ByRef p_eventData)
+    DBExecute "EXEC SP_WRITE_EVENT '', " & WrapInSingleQuotes(m_myKey) & ", " & m_callId & ", " & WrapInSingleQuotes(ConvertDateToISO(Now)) & ", " & WrapInSingleQuotes(p_eventData)
+  End Sub
+End Class
+

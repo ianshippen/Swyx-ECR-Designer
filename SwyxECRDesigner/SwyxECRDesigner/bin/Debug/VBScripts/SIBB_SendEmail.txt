@@ -1,0 +1,38 @@
+Function SIBB_SendEmail(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_SendEmail(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")
+
+  If UBound(myArray) >= 2 Then
+    Dim emailTo : emailTo = myArray(0)
+    Dim emailSubject : emailSubject = myArray(1)
+    Dim emailBody : emailBody = myArray(2)
+    Dim emailUserName : emailUserName = "Main Line"
+
+    If UBound(myArray) >= 3 Then
+      if myArray(3) <> "" Then emailUserName = myArray(3)
+    End If
+
+    myUseExit = gseSendEMailEx3(emailTo, emailSubject, emailBody, "None", "", "", "", "", "", False, emailUserName)
+  Else
+    LogError "ServiceBuilder::SendEmail(" & WrapInQuotes(p_data) & " - invalid data"
+  End If
+
+  Select Case myUseExit
+    Case gseStateSent
+      myUseExit = 0
+
+    Case gseStateDisconnected
+      myUseExit = 1
+
+    Case Else
+      myUseExit = -1
+  End Select
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_SendEmail() returning " & myUseExit & ", " & WrapInQuotes(p_result)
+
+  SIBB_SendEmail = myUseExit
+End Function

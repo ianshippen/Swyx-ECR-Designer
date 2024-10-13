@@ -1,0 +1,32 @@
+Sub DBExecute(ByRef p_statement)
+  Dim db
+
+  On Error Resume Next
+  Set db = CreateObject("ADODB.Connection")
+
+  If Err = 0 Then
+    db.Open GenerateDatabaseConnectionString()
+
+    If Err = 0 Then
+      db.Execute p_statement
+
+      If Err <> 0 Then
+        LogError "DBExecute(" & p_statement & ") could not execute statement"
+        LogError "DBExecute: " & Err.Source
+        LogError "DBExecute: " & Err.Description
+      End If
+
+      db.Close
+    Else
+      LogError "DBExecute(" & p_statement & ") could not open database with connection string = " & WrapInQuotes(GenerateDatabaseConnectionString())
+      LogError "DBExecute: " & Err.Source
+      LogError "DBExecute: " & Err.Description
+    End If
+    
+    Set db = nothing
+  Else
+    LogError "DBExecute(" & p_statement & ") could not create ADODB.Connection"
+    LogError "DBExecute: " & Err.Source
+    LogError "DBExecute: " & Err.Description
+  End If
+End Sub

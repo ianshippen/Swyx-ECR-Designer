@@ -1,0 +1,22 @@
+Function SIBB_AddCallToQueue(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_AddCallToQueue(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit, myArray, myQueueId, myCallId
+
+  myUseExit = -1
+  myArray = Split(p_data, ",")
+
+  If UBound(myArray) = 1 Then
+    myCallId = myArray(0)
+    myQueueId = myArray(1)
+    myUseExit = 0
+
+    AddCallToQueue myCallid, CInt(myQueueId), ""
+  Else
+    LogError "ServiceBuilder::SIBB_AllCallToQueue(" & WrapInQuotes(p_data) & ") Error: Wrong number of parameters"   
+  End If
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_AddCallToQueue returns " & myUseExit
+
+  SIBB_AddCallToQueue = myUseExit
+End Function

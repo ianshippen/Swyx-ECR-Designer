@@ -1,0 +1,3 @@
+Sub LogTraceDB(ByRef p_module, ByVal p_status, ByRef p_info)
+	DBExecute "INSERT INTO ServiceBuilderTraceTable VALUES (" & WrapInSingleQuotes(CreateTimestamp()) & ", " & CallId() & ", " & WrapInSingleQuotes(p_module) & ", " & p_status & ", " & WrapInSingleQuotes(SingleQuoteCheck(p_info)) & ")"
+End Sub

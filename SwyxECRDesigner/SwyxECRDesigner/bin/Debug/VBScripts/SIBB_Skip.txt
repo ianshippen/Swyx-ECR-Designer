@@ -1,0 +1,4 @@
+Function SIBB_Skip(ByRef p_data)
+  variablesDictionary.Item("$returnCode") = 1
+  SIBB_Skip = -1
+End Function

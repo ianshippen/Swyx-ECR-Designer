@@ -1,0 +1,18 @@
+' Last Modified: 16/07/2015 00:04:42
+Function SIBB_Holiday(ByRef p_data)
+	If debugFlag Then LogError "ServiceBuilder::SIBB_Holiday()"
+
+	Dim myUseExit : myUseExit = 0
+	Dim myResult : myResult = ""
+
+	myResult = DBReadScalar("select IsNull(count(*), 0) as value from BankHolidayTable where date = CONVERT(varchar(10), getdate(), 103)", "value")
+
+	If Not IsNull(myResult) Then
+		If myResult <> "" Then myUseExit = CInt(myResult)
+		If myResult > 1 Then myResult = 1
+	End If
+
+	If debugFlag Then LogError "ServiceBuilder::SIBB_Holiday() rerturned " & myUseExit
+
+	SIBB_Holiday = myUseExit
+End Function

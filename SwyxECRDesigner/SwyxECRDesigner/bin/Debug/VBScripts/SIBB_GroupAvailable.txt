@@ -1,0 +1,24 @@
+Function SIBB_GroupAvailable(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GroupAvailable(" & WrapInQuotes(p_data) & ")"
+
+  Dim result, myArray, myTarget, myRule
+
+  result = -1
+  myArray = Split(p_data, ",")
+
+  If UBound(myArray) = 1 Then
+    result = 0
+    myTarget = myArray(0)
+    myRule = RemoveBrackets(myArray(1))
+
+    If GroupAvailable(myTarget, myRule) Then result = 1
+  Else
+    LogError "ServiceBuilder::SIBB_GroupAvailable(" & WrapInQuotes(p_data) & ") Error: Wrong number of parameters"
+  End If
+
+  If PBXCall.IsOriginatorDisconnected Then result = 2
+
+  SIBB_GroupAvailable = result
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_GroupAvailable() returning " & result
+End Function

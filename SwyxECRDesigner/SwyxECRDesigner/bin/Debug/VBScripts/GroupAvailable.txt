@@ -1,0 +1,47 @@
+' Gets every member of the group(s) or the single user in p_target, along with their current status
+' As soon as it finds a user with a status value in p_rule, e.g. status = 2 normally for yellow option,
+' it leaves both levels of For .. Next, and returns True
+
+Function GroupAvailable(ByRef p_target, ByRef p_rule)
+  If debugFlag Then LogError "ServiceBuilder::GroupAvailable(" & WrapInQuotes(p_target) & ", " & WrapInQuotes(p_rule) & ")"
+
+  Dim result : result = False
+  Dim i, myUserInfoList, myArray
+
+  Set myUserInfoList = New UserInfoListClass
+  myUserInfoList.Debug(debugFlag)
+
+  ' Get group members
+  GetCompositeGroupMembers p_target, myUserInfoList
+
+  If p_rule <> "" Then
+    If InStr(p_rule, ",") > 0 Then
+      myArray = Split(p_rule, ",")
+    Else
+      myArray = Split(p_rule, ";")
+    End If
+  Else
+    ReDim myArray(0)
+
+    myArray(0) = CInt(STATUS_AVAILABLE)
+  End If
+
+  For i = 0 To myUserInfoList.GetCount() - 1
+    Dim j, myState : myState = myUserInfoList.GetState(i) 
+
+    For j = 0 To UBound(myArray)
+      If CInt(myArray(j)) = myState Then
+        result = True
+        Exit For
+      End If
+    Next
+
+    If result Then Exit For
+  Next
+
+  Set myUserInfoList = Nothing
+
+  If debugFlag Then LogError "ServiceBuilder::GroupAvailable() returning " & result
+
+  GroupAvailable = result
+End Function

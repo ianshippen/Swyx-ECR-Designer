@@ -1,0 +1,22 @@
+Const DATA_SOURCE = ".\SQLEXPRESS"
+Const STANDBY_DATA_SOURCE = ""
+Const STANDBY_MACHINE_NAME = ""
+Const DATABASE = "OpenQueue"
+Const USERID = "reachall"
+Const PASSWORD = "reachall"
+
+Const STATUS_STATE_UNAVAILABLE = 0
+Const STATUS_LOGGED_OFF = 1
+Const STATUS_AVAILABLE = 2
+Const STATUS_SPEAKING_EXTERNAL = 3
+Const STATUS_ALERTING = 4
+Const STATUS_SPEAKING_INTERNAL = 5
+Const STATUS_AWAY = 6
+Const STATUS_DND = 7
+
+Const YELLOW_OPTION = "2"
+
+' Red means show as available if Idle or On a call
+' Yellow means show as available only if Idle 
+
+

@@ -1,0 +1,11 @@
+Function SIBB_RemoveCallFromQueue(ByRef p_data)
+  If debugFlag Then LogError "ServiceBuilder::SIBB_RemoveCallFromQueue(" & WrapInQuotes(p_data) & ")"
+
+  Dim myUseExit : myUseExit = 0
+
+  RemoveCallFromQueue p_data
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_RemoveCallFromQueue returns " & myUseExit
+
+  SIBB_RemoveCallFromQueue = myUseExit
+End Function

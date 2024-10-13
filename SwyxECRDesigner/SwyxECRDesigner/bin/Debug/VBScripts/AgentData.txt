@@ -1,0 +1,38 @@
+Function AddAgentDataMasterRecord(ByRef p_target)
+  Dim myKey, myResult
+
+  On Error Resume Next
+
+  myKey = -1
+  myResult = DBReadScalar("INSERT INTO AgentDataMasterTable OUTPUT Inserted.myKey VALUES (" & WrapInSingleQuotes(CreateTimestamp()) & ", " & CallId() & ", " & WrapInSingleQuotes(CalledNumber()) & ", " & WrapInSingleQuotes(p_target) & ")", "myKey")
+
+  If Not IsNull(myResult) Then
+    If myResult <> "" Then myKey = CLng(myResult)
+  End If
+
+  AddAgentDataMasterRecord = myKey
+End Function
+
+Sub AddAgentDataRecord(ByVal p_key, ByVal p_userId, ByVal p_userState)
+  On Error Resume Next
+
+  DBExecute "INSERT INTO AgentDataTable VALUES (" & p_key & ", " & p_userId & ", " & p_userState & ")"
+End Sub
+
+Sub AddAgentDataRecordsFromInfo(ByVal p_key, ByRef p_info)
+  Dim mySql, myUser
+
+  On Error Resume Next
+  mySql = ""
+
+  For Each myUser In p_info
+    If mySql <> "" Then mySql = mySql & ", "
+
+    mySql = mySql & "(" & CStr(p_key) & ", " & CStr(myUser.UserId) & ", " & CStr(myUser.State) & ")"
+  Next
+
+  If mySql <> "" Then
+    mySql = "INSERT INTO AgentDataTable VALUES " & mySql
+    DBExecute mySql
+  End If
+End Sub

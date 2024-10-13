@@ -1,0 +1,39 @@
+Function DBReadScalar(ByRef p_statement, ByRef p_fieldName)
+  Dim db, rs, result
+
+  On Error Resume Next
+  result = ""
+  Set db = CreateObject("ADODB.Connection")
+
+  If Err = 0 Then
+    db.Open GenerateDatabaseConnectionString()
+
+    If Err = 0 Then
+      Set rs = db.Execute(p_statement)
+  
+      If Err = 0 Then
+        If Not rs.EOF Then
+          result = CStr(rs(p_fieldName))
+        End If
+      Else
+        LogError "DBReadScalar(" & WrapInQuotes(p_statement) & ", " & WrapInQuotes(p_fieldName) & ") could not execute statement = " & WrapInQuotes(p_statement)
+        LogError "DBReadScalar: " & Err.Source
+        LogError "DBReadScalar: " & Err.Description
+      End If
+      
+      db.Close
+    Else
+      LogError "DBReadScalar(" & WrapInQuotes(p_statement) & ", " & WrapInQuotes(p_fieldName) & ") could not connect to database with connection string = " & WrapInQuotes(GenerateDatabaseConnectionString())
+      LogError "DBReadScalar: " &Err.Source
+      LogError "DBReadScalar: " &Err.Description
+    End If
+    
+    Set db = nothing
+  Else
+    LogError "DBReadScalar(" & WrapInQuotes(p_statement) & ", " & WrapInQuotes(p_fieldName) & ") could not create ADODB oject"
+    LogError "DBReadScalar: " &Err.Source
+    LogError "DBReadScalar: " &Err.Description
+  End If
+
+  DBReadScalar = result
+End Function

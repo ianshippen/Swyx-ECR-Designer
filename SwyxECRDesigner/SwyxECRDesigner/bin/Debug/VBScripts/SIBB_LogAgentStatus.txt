@@ -1,0 +1,16 @@
+Function SIBB_LogAgentStatus(ByRef p_data)
+  Dim result, myTarget, myInfo
+
+  result = 0
+  myTarget = p_data
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_LogAgentStatus(" & WrapInQuotes(p_data) & ")"
+
+  GetGroupMembers myTarget, myInfo
+
+  If PBXCall.IsOriginatorDisconnected Then result = 1
+
+  SIBB_LogAgentStatus = result
+
+  If debugFlag Then LogError "ServiceBuilder::SIBB_LogAgentStatus() returning " & result
+End Function

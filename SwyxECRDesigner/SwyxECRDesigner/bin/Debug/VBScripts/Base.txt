@@ -1,0 +1,83 @@
+Dim debugFlag, baseUsesArrayList, variablesDictionary
+
+debugFlag = False
+Set baseUsesArrayList = CreateObject("System.Collections.ArrayList")
+Set variablesDictionary = CreateObject("Scripting.Dictionary")
+
+' If variable exists then sets it to the new value, otherwise creates it with this value
+Sub SetVar(ByRef p_key, ByRef p_value)
+	If variablesDictionary.Exists(p_key) Then
+		variablesDictionary.Item(p_key) = p_value
+	Else
+		variablesDictionary.Add p_key, p_value
+	End If
+End Sub
+
+' If variable exists then does nothing, otherwise creates it with this value
+Sub AddVar(ByRef p_key, ByRef p_value)
+	If Not variablesDictionary.Exists(p_key) Then variablesDictionary.Add p_key, p_value
+End Sub
+
+Function GetVar(ByRef p_key)
+	Dim result : result = ""
+
+	If variablesDictionary.Exists(p_key) Then result = variablesDictionary.Item(p_key)
+
+	GetVar = result
+End Function
+
+Function IsVar(ByRef p_key, ByRef p_value)
+	Dim result : result = False
+
+	If variablesDictionary.Exists(p_key) Then
+		If variablesDictionary.Item(p_key) = p_value Then result = True
+        End If
+
+	IsVar = result
+End Function
+
+Function IsVarTrue(ByRef p_key)
+	Dim result : result = False
+
+	If variablesDictionary.Exists(p_key) Then
+		If LCase(variablesDictionary.Item(p_key)) = "true" Then result = True
+        End If
+
+	IsVarTrue = result
+End Function
+
+Function IsVarInt(ByRef p_key)
+	Dim result : result = False
+	Dim startIndex : startIndex = 1
+	Dim i, myCode
+	Dim myString : myString = GetVar(p_key)
+
+	If myString <> "" Then
+		If Left(myString, 1) = "+" Or Left(myString, 1) = "-" Then startIndex = 2
+
+		If startIndex <= Len(myString) Then
+			result = True
+
+			For i = startIndex To Len(myString)
+				myCode = Asc(Mid(myString, i, 1))
+
+				If myCode < Asc("0") Or myCode > Asc("9") Then
+					result = False
+					Exit For
+				End If
+			Next
+		Else
+			result = False
+		End If
+	End If
+
+	IsVarInt = result
+End Function
+
+Function IncVar(ByRef p_key)
+	If IsVarInt(p_key) Then SetVar p_key, CStr(CLng(GetVar(p_key)) + 1)
+End Function
+
+Function DecVar(ByRef p_key)
+	If IsVarInt(p_key) Then SetVar p_key, CStr(CLng(GetVar(p_key)) - 1)
+End Function
